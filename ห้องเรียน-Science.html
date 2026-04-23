@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>ห้องเรียนวิทยาศาสตร์</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --g1:#f0f7e6;--g2:#c0dd97;--g3:#639922;--g4:#3b6d11;--g5:#27500a;
+  --text:#1a2e0a;--muted:#607848;--sur:#fff;--bg:#f4f8ee;
+  --b1:rgba(99,153,34,.12);--b2:rgba(99,153,34,.32);
+  --ok:#2d6a17;--warn:#b45309;--err:#991b1b;
+  --r:14px;--rs:9px;--sh:0 2px 12px rgba(59,109,17,.08);--shb:0 6px 28px rgba(59,109,17,.14);
+}
+html,body{height:100%;font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);}
+body{display:flex;flex-direction:column;min-height:100vh;}
+.card{background:var(--sur);border:.5px solid var(--b2);border-radius:var(--r);padding:15px;margin-bottom:12px;box-shadow:var(--sh);}
+.card-hd{font-family:'Prompt',sans-serif;font-size:14px;font-weight:500;color:var(--g4);margin-bottom:12px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--g1);padding-bottom:9px;}
+.cticon{width:26px;height:26px;border-radius:7px;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.btn{padding:9px 18px;border-radius:var(--rs);font-size:13px;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;font-weight:500;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
+.btn-p{background:var(--g3);color:#fff;box-shadow:0 2px 8px rgba(99,153,34,.25);}
+.btn-p:hover{background:var(--g4);}
+.btn-s{background:var(--g1);color:var(--g4);border:1px solid var(--b2);}
+.btn-s:hover{background:var(--g2);}
+.btn-d{background:#fef2f2;color:var(--err);border:1px solid #fca5a5;}
+.btn-warn{background:#fffbeb;color:var(--warn);border:1px solid #fcd34d;}
+.btn-sm{padding:5px 12px;font-size:12px;}
+.btn-xs{padding:3px 8px;font-size:11px;border-radius:6px;}
+.input{width:100%;padding:10px 13px;font-size:13px;border:1px solid var(--b2);border-radius:var(--rs);outline:none;font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);transition:border .2s;}
+.input:focus{border-color:var(--g3);box-shadow:0 0 0 3px rgba(99,153,34,.1);}
+textarea.input{resize:vertical;min-height:80px;line-height:1.6;}
+select.input{cursor:pointer;}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px;font-weight:500;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.g3c{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;}
+.srow{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:.5px solid var(--b1);}
+.srow:last-child{border-bottom:none;}
+.av{width:34px;height:34px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--g4);flex-shrink:0;border:1.5px solid var(--b2);}
+.sname{font-size:13px;color:var(--text);}
+.smeta{font-size:11px;color:var(--muted);margin-top:1px;}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500;}
+.bp{background:#f0f7e6;color:var(--ok);border:1px solid #c0dd97;}
+.ba{background:#fef2f2;color:var(--err);border:1px solid #fca5a5;}
+.bl{background:#fffbeb;color:var(--warn);border:1px solid #fcd34d;}
+.blv{background:#eff6ff;color:#1d4ed8;border:1px solid #93c5fd;}
+.chip{padding:5px 12px;border-radius:20px;font-size:12px;border:1px solid var(--b2);cursor:pointer;background:var(--sur);color:var(--muted);transition:all .15s;user-select:none;}
+.chip.on{background:var(--g3);color:#fff;border-color:var(--g3);}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.sg3{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:12px;}
+.sg4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.sbox{background:var(--bg);border-radius:var(--rs);padding:12px 8px;text-align:center;border:.5px solid var(--b2);}
+.sn{font-size:21px;font-weight:600;font-family:'Prompt',sans-serif;color:var(--g4);}
+.sl{font-size:11px;color:var(--muted);margin-top:2px;}
+.page{display:none;padding:14px;max-width:900px;margin:0 auto;}
+.page.on{display:block;animation:fi .2s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.empty{text-align:center;padding:28px;color:var(--muted);font-size:13px;line-height:1.8;}
+/* MODAL */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.52);display:flex;align-items:flex-start;justify-content:center;z-index:300;padding:14px;overflow-y:auto;backdrop-filter:blur(3px);}
+.mbox{background:var(--sur);border-radius:var(--r);padding:20px;width:100%;max-width:520px;box-shadow:0 20px 60px rgba(0,0,0,.2);margin:auto;}
+.mhd{font-family:'Prompt',sans-serif;font-size:15px;font-weight:600;color:var(--g4);margin-bottom:15px;display:flex;align-items:center;gap:7px;}
+.mfooter{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
+.fg{margin-bottom:11px;}
+/* GATE */
+#gate{position:fixed;inset:0;z-index:900;background:linear-gradient(160deg,var(--g5),#1a3d0b 50%,#0f2a06);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.gate-logo{width:80px;height:80px;border-radius:50%;background:rgba(192,221,151,.12);border:2px solid rgba(192,221,151,.38);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:18px;animation:pulse 2.5s ease infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(192,221,151,.28)}50%{box-shadow:0 0 0 16px rgba(192,221,151,0)}}
+.gate-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:380px;}
+.gcard{background:rgba(255,255,255,.07);border:1.5px solid rgba(192,221,151,.22);border-radius:var(--r);padding:20px 14px;cursor:pointer;transition:all .2s;text-align:center;user-select:none;}
+.gcard:hover{background:rgba(255,255,255,.13);border-color:var(--g2);transform:translateY(-3px);}
+/* LOGIN */
+.lsc{position:fixed;inset:0;z-index:880;display:none;align-items:center;justify-content:center;padding:24px;flex-direction:column;}
+.lsc.on{display:flex;}
+.lbox{background:rgba(255,255,255,.08);border:1.5px solid rgba(192,221,151,.28);border-radius:18px;padding:24px 20px;width:100%;max-width:330px;text-align:center;}
+.pin-dots{display:flex;gap:11px;justify-content:center;margin:12px 0 10px;}
+.pin-dot{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(192,221,151,.3);transition:all .15s;}
+.pin-dot.on{background:var(--g2);border-color:var(--g2);}
+.np{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+.np-btn{background:rgba(255,255,255,.1);border:1px solid rgba(192,221,151,.18);border-radius:11px;padding:14px 7px;font-size:19px;font-weight:600;color:#fff;cursor:pointer;font-family:'Prompt',sans-serif;user-select:none;transition:all .15s;}
+.np-btn:active{transform:scale(.93);}
+.np-btn.del{font-size:14px;background:rgba(255,80,80,.12);}
+.np-btn.enter{background:var(--g3);border-color:var(--g2);grid-column:span 3;font-size:14px;padding:12px;}
+.lerr{color:#fca5a5;font-size:12.5px;min-height:18px;margin-bottom:8px;}
+.idd{background:rgba(0,0,0,.25);border:1.5px solid rgba(192,221,151,.3);border-radius:11px;padding:14px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;font-family:'Prompt',sans-serif;letter-spacing:10px;min-height:54px;}
+.idd.v{color:var(--g2);}
+/* HEADER */
+.hdr{background:linear-gradient(135deg,var(--g5),#1e4010);flex-shrink:0;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.25);}
+.hdr-in{display:flex;align-items:center;gap:11px;padding:11px 14px;}
+.lg{width:40px;height:40px;border-radius:50%;background:var(--g3);display:flex;align-items:center;justify-content:center;font-size:19px;border:2px solid var(--g2);flex-shrink:0;}
+.mb{margin-left:auto;padding:4px 11px;border-radius:20px;font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:5px;flex-shrink:0;cursor:pointer;}
+.mb-t{background:rgba(192,221,151,.18);color:var(--g2);border:1px solid rgba(192,221,151,.28);}
+.mb-s{background:rgba(147,197,253,.18);color:#93c5fd;border:1px solid rgba(147,197,253,.28);}
+.tabs{display:flex;background:rgba(0,0,0,.18);border-top:1px solid rgba(255,255,255,.07);overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex:1;min-width:60px;padding:9px 4px;text-align:center;cursor:pointer;font-size:10.5px;color:rgba(192,221,151,.6);border-bottom:2.5px solid transparent;transition:all .2s;white-space:nowrap;}
+.tab.on{color:#fff;border-bottom-color:var(--g2);background:rgba(255,255,255,.07);}
+.tab-ic{display:block;font-size:14px;margin-bottom:1px;}
+.abody{flex:1;overflow-y:auto;}
+/* NOTICE */
+.notice{border-radius:var(--rs);padding:10px 13px;font-size:13px;margin-bottom:8px;display:flex;align-items:flex-start;gap:9px;line-height:1.6;}
+.ng{background:var(--g1);border:1px solid var(--g2);color:var(--g4);}
+.nb{background:#eff6ff;border:1px solid #93c5fd;color:#1e40af;}
+.na{background:#fffbeb;border:1px solid #fcd34d;color:#92400e;}
+.nr{background:#fef2f2;border:1px solid #fca5a5;color:var(--err);}
+/* ATT */
+.ab{padding:5px 8px;font-size:11px;border-radius:6px;border:1.5px solid transparent;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all .15s;}
+.ab-p{background:#f0f7e6;color:var(--ok);border-color:#c0dd97;}
+.ab-a{background:#fef2f2;color:var(--err);border-color:#fca5a5;}
+.ab-l{background:#fffbeb;color:var(--warn);border-color:#fcd34d;}
+.ab-v{background:#eff6ff;color:#1d4ed8;border-color:#93c5fd;}
+.ab.sel{font-weight:700;transform:scale(1.08);}
+/* GAME */
+.qopt{padding:12px 9px;border-radius:var(--rs);border:1.5px solid var(--b2);background:var(--sur);cursor:pointer;font-size:12.5px;color:var(--text);transition:all .18s;text-align:center;font-family:'Sarabun',sans-serif;line-height:1.4;}
+.qopt:hover:not(:disabled){border-color:var(--g3);background:var(--g1);}
+.qopt.ok{background:#f0f7e6;border-color:var(--g3);color:var(--ok);font-weight:600;}
+.qopt.ng{background:#fef2f2;border-color:#fca5a5;color:var(--err);}
+.qopt:disabled{cursor:default;}
+.codebox{width:54px;height:62px;border:2px solid var(--b2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--g4);font-family:'Prompt',sans-serif;background:var(--bg);transition:border-color .15s;}
+.mc{aspect-ratio:1;border-radius:var(--rs);border:2px solid var(--b2);cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--bg);transition:all .2s;user-select:none;font-size:16px;font-weight:500;padding:4px;text-align:center;line-height:1.3;color:var(--text);}
+.mc.fp{background:var(--sur);border-color:var(--g3);}
+.mc.mt{background:var(--g1);border-color:var(--g3);cursor:default;}
+/* LESSON */
+.lc{background:var(--sur);border:.5px solid var(--b2);border-radius:var(--r);margin-bottom:10px;overflow:hidden;box-shadow:var(--sh);}
+.lc-hd{display:flex;align-items:center;gap:11px;padding:13px 15px;cursor:pointer;user-select:none;}
+.lc-num{width:34px;height:34px;border-radius:50%;background:var(--g3);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+.lc-arr{width:22px;height:22px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);transition:transform .2s;flex-shrink:0;}
+.lc.open .lc-arr{transform:rotate(90deg);}
+.lc-bd{display:none;padding:0 15px 15px;border-top:1px solid var(--g1);}
+.lc.open .lc-bd{display:block;}
+/* CLASSROOM CARD */
+.cls-card{background:var(--sur);border-radius:var(--r);padding:16px 18px;margin-bottom:11px;border:.5px solid var(--b2);box-shadow:var(--sh);transition:all .18s;}
+.cls-card:hover{border-color:var(--g3);transform:translateY(-2px);box-shadow:var(--shb);}
+/* UPLOAD */
+.upz{border:2px dashed var(--b2);border-radius:var(--r);padding:26px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);position:relative;}
+.upz:hover,.upz.drag{border-color:var(--g3);background:var(--g1);}
+.upz input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.ig{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;margin-top:11px;}
+.ith{position:relative;aspect-ratio:1;border-radius:var(--rs);overflow:hidden;border:.5px solid var(--b2);}
+.ith img{width:100%;height:100%;object-fit:cover;}
+.idel{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(153,27,27,.85);color:#fff;border:none;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;}
+.smini{width:42px;height:42px;border-radius:6px;object-fit:cover;cursor:pointer;border:.5px solid var(--b2);transition:transform .15s;}
+.smini:hover{transform:scale(1.08);}
+/* LIGHTBOX */
+.lbx{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:600;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;padding:20px;}
+.lbx img{max-width:92vw;max-height:78vh;border-radius:10px;object-fit:contain;}
+.lbx-close{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+/* SCORE TABLE */
+.stbl{width:100%;border-collapse:collapse;font-size:12.5px;min-width:420px;}
+.stbl th{background:var(--g1);color:var(--g4);padding:8px 9px;text-align:left;font-weight:500;font-size:12px;border-bottom:1px solid var(--b2);}
+.stbl td{padding:8px 9px;border-bottom:.5px solid var(--b1);}
+.stbl tr:hover td{background:var(--g1);}
+.gA{color:#1a7a3a;font-weight:700;}.gB{color:var(--g3);font-weight:600;}.gC{color:var(--warn);font-weight:600;}.gD{color:var(--err);font-weight:600;}
+/* RANDOM PICKER */
+.picker-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:400;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.picker-card{background:linear-gradient(135deg,var(--g5),#1e4010);border-radius:24px;padding:40px 48px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.5);border:2px solid rgba(192,221,151,.3);min-width:300px;}
+.picker-name{font-size:28px;font-weight:700;color:#fff;font-family:'Prompt',sans-serif;margin-bottom:8px;min-height:40px;}
+.picker-nick{font-size:16px;color:var(--g2);margin-bottom:20px;min-height:22px;}
+.picker-num{font-size:13px;color:rgba(192,221,151,.5);margin-bottom:24px;}
+.picker-spinning{animation:spin-name .08s linear infinite;}
+@keyframes spin-name{0%{opacity:.3;transform:translateY(-4px)}50%{opacity:1;transform:translateY(0)}100%{opacity:.3;transform:translateY(4px)}}
+/* ROOM BAR */
+.rbar{background:var(--sur);border-radius:var(--rs);padding:10px 13px;margin-bottom:13px;border:.5px solid var(--b2);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+/* TOAST */
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--g4);color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;z-index:700;box-shadow:0 4px 20px rgba(0,0,0,.2);opacity:0;transition:all .3s;white-space:nowrap;max-width:90vw;text-align:center;}
+.toast.on{transform:translateX(-50%) translateY(0);opacity:1;}
+.gp-bar{height:10px;background:rgba(255,255,255,.12);border-radius:5px;overflow:hidden;margin-top:8px;}
+.gp-fill{height:100%;border-radius:5px;transition:width .5s;}
+@media(max-width:480px){.sg4{grid-template-columns:repeat(2,1fr);}.g2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-logo">🌿</div>
+  <div style="color:#fff;font-family:'Prompt',sans-serif;font-size:24px;font-weight:700;text-align:center;margin-bottom:4px;">Science Classroom</div>
+  <div style="color:var(--g2);font-size:13px;text-align:center;margin-bottom:30px;">ระบบจัดการห้องเรียนวิทยาศาสตร์</div>
+  <div class="gate-cards">
+    <div class="gcard" onclick="gTeacher()">
+      <div style="font-size:32px;margin-bottom:10px;">👩‍🏫</div>
+      <div style="color:#fff;font-size:14px;font-weight:600;font-family:'Prompt',sans-serif;margin-bottom:3px;">ครู</div>
+      <div style="color:rgba(192,221,151,.65);font-size:11.5px;line-height:1.5;">จัดการห้องเรียน คะแนน บทเรียน</div>
+    </div>
+    <div class="gcard" onclick="gStudent()">
+      <div style="font-size:32px;margin-bottom:10px;">👨‍🎓</div>
+      <div style="color:#fff;font-size:14px;font-weight:600;font-family:'Prompt',sans-serif;margin-bottom:3px;">นักเรียน</div>
+      <div style="color:rgba(192,221,151,.65);font-size:11.5px;line-height:1.5;">ดูคะแนน บทเรียน เล่นเกม</div>
+    </div>
+  </div>
+</div>
+
+<!-- TEACHER LOGIN -->
+<div id="tls" class="lsc" style="background:linear-gradient(160deg,var(--g5),#1a3d0b);">
+  <div class="lbox">
+    <div style="font-size:44px;margin-bottom:12px;">🔐</div>
+    <div style="color:#fff;font-family:'Prompt',sans-serif;font-size:17px;font-weight:600;margin-bottom:5px;">รหัสครู (PIN)</div>
+    <div style="color:var(--g2);font-size:12.5px;margin-bottom:16px;line-height:1.6;">PIN เริ่มต้น: <strong>1234</strong> · เปลี่ยนได้ในตั้งค่า</div>
+    <div class="pin-dots" id="tpd"><div class="pin-dot" id="tp0"></div><div class="pin-dot" id="tp1"></div><div class="pin-dot" id="tp2"></div><div class="pin-dot" id="tp3"></div></div>
+    <div class="lerr" id="tperr"></div>
+    <div class="np" id="tpnp"></div>
+    <div style="color:var(--g2);font-size:12.5px;cursor:pointer;margin-top:12px;opacity:.75;text-decoration:underline;" onclick="backGate()">← กลับ</div>
+  </div>
+</div>
+
+<!-- STUDENT LOGIN -->
+<div id="sls" class="lsc" style="background:linear-gradient(160deg,#1a3d0b,var(--g4));">
+  <div class="lbox">
+    <div style="font-size:44px;margin-bottom:12px;">🎓</div>
+    <div style="color:#fff;font-family:'Prompt',sans-serif;font-size:17px;font-weight:600;margin-bottom:5px;">รหัสนักเรียน</div>
+    <div style="color:var(--g2);font-size:12.5px;margin-bottom:14px;">กรอกรหัส 4 หลัก</div>
+    <div class="idd" id="sidd">_ _ _ _</div>
+    <div class="lerr" id="serr"></div>
+    <div class="np" id="snp"></div>
+    <div style="color:var(--g2);font-size:12.5px;cursor:pointer;margin-top:12px;opacity:.75;text-decoration:underline;" onclick="backGate()">← กลับ</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;flex-direction:column;min-height:100vh;">
+  <div class="hdr">
+    <div class="hdr-in">
+      <div class="lg" id="hlg">🌿</div>
+      <div><div id="ht" style="color:#fff;font-size:15px;font-weight:600;font-family:'Prompt',sans-serif;">ห้องเรียน</div><div id="hs" style="color:var(--g2);font-size:11px;margin-top:1px;">Science Classroom</div></div>
+      <div class="mb" id="mbadge" onclick="switchMode()"></div>
+    </div>
+    <div class="tabs" id="tbar"></div>
+  </div>
+  <div class="abody" id="abody"></div>
+</div>
+
+<!-- MODAL -->
+<div id="mbg" class="mbg" style="display:none;" onclick="if(event.target.id==='mbg')closeMdl()">
+  <div class="mbox" id="mbox"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- LIGHTBOX -->
+<div id="lbxEl" class="lbx" style="display:none;" onclick="if(event.target.id==='lbxEl')closeLbx()">
+  <button class="lbx-close" onclick="closeLbx()">✕</button>
+  <img id="lbxi" src="" alt="">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <button onclick="lbN(-1)" id="lbp" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:18px;cursor:pointer;">‹</button>
+    <span id="lbc" style="color:rgba(255,255,255,.6);font-size:13px;"></span>
+    <button onclick="lbN(1)" id="lbn" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:18px;cursor:pointer;">›</button>
+  </div>
+</div>
+
+<!-- RANDOM PICKER -->
+<div id="picker" class="picker-overlay" style="display:none;" onclick="if(event.target.id==='picker')closePicker()">
+  <div class="picker-card">
+    <div style="color:rgba(192,221,151,.6);font-size:13px;margin-bottom:16px;">🎲 สุ่มรายชื่อนักเรียน</div>
+    <div class="picker-name" id="pk-name">—</div>
+    <div class="picker-nick" id="pk-nick"></div>
+    <div class="picker-num" id="pk-num"></div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button onclick="doSpin()" id="pk-btn" style="padding:12px 28px;background:var(--g3);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'Sarabun',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.3);">🎲 สุ่มใหม่</button>
+      <button onclick="closePicker()" style="padding:12px 20px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:var(--rs);font-size:14px;cursor:pointer;font-family:'Sarabun',sans-serif;">ปิด</button>
+    </div>
+  </div>
+  <div style="color:rgba(192,221,151,.5);font-size:12px;margin-top:8px;">กดที่พื้นหลังเพื่อปิด</div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+let PIN = '1234';
+
+// Each classroom: {id,name,icon,color,subject,level,desc,
+//  students[{id,name,nick,no}], assignments[{name,max}],
+//  lessons[{id,title,icon,hours,desc,obj[],res[{icon,cls,name,kind,url}]}],
+//  announcements[{id,text,type}],
+//  dates[], attendance{date:{sid:P/A/L/LV}},
+//  scores{sid:{aname:n}}, bonus{sid:n}, bonusLog{sid:[{amount,reason,date,type}]},
+//  selfCheckin{date:{sid:time}}, submissions{aname:{sid:{images,at,msg}}},
+//  classCode{code,expiry,dur}, customGames{id:game},
+//  gamePoints{sid:n}, redeemedRewards{sid:[rid]}}
+
+let CLS = [
+  { id:'c1', name:'ม.2/1 วิทยาศาสตร์', icon:'🔬', color:'#166534', subject:'วิทยาศาสตร์', level:'ม.2', desc:'ภาคเรียนที่ 2/2567',
+    students:[
+      {id:'6501',name:'กัญญา สุขใจ',nick:'กัญ',no:1},
+      {id:'6502',name:'ณัฐพล รุ่งเรือง',nick:'นัท',no:2},
+      {id:'6503',name:'พิมพ์ชนก แสนดี',nick:'พิม',no:3},
+      {id:'6504',name:'ธนภัทร วงศ์สุข',nick:'โบ๊ท',no:4},
+      {id:'6505',name:'สุภาพร มีสุข',nick:'ตาล',no:5},
+      {id:'6506',name:'อภิสิทธิ์ ใจดี',nick:'เจมส์',no:6},
+      {id:'6507',name:'นุชนารถ พรมมา',nick:'นุช',no:7},
+      {id:'6508',name:'ปิยะพัฒน์ ศรีทอง',nick:'ปาย',no:8},
+    ],
+    assignments:[{name:'งาน 1',max:10},{name:'งาน 2',max:10},{name:'งาน 3',max:10}],
+    lessons:[
+      {id:1,title:'บทที่ 1 : เซลล์และสิ่งมีชีวิต',icon:'🔬',hours:6,desc:'ศึกษาโครงสร้างเซลล์พืชและเซลล์สัตว์ ออร์แกเนลล์ และกระบวนการพื้นฐาน',obj:['อธิบายโครงสร้างเซลล์','เปรียบเทียบเซลล์พืชและเซลล์สัตว์','อธิบายกระบวนการออสโมซิส'],res:[{icon:'📄',cls:'ri-pdf',name:'เอกสารบท 1',kind:'PDF',url:''},{icon:'▶️',cls:'ri-vid',name:'วิดีโอ: เซลล์ของสิ่งมีชีวิต',kind:'วิดีโอ',url:''}]},
+      {id:2,title:'บทที่ 2 : การสังเคราะห์ด้วยแสง',icon:'🌿',hours:5,desc:'กระบวนการสังเคราะห์ด้วยแสง ปัจจัยที่มีผล และความสำคัญต่อสิ่งมีชีวิต',obj:['เขียนสมการการสังเคราะห์แสง','ระบุปัจจัยที่มีผล'],res:[]},
+    ],
+    announcements:[
+      {id:1,text:'📌 ส่งรายงานบท 1 ภายในวันที่ 21 มีนาคม 2568',type:'g'},
+      {id:2,text:'📖 สอบกลางภาค 28 มีนาคม — เนื้อหา บท 1–2',type:'b'},
+    ],
+    dates:['14 มี.ค. 68','17 มี.ค. 68','21 มี.ค. 68'],
+    attendance:{},scores:{},bonus:{},bonusLog:{},selfCheckin:{},submissions:{},classCode:null,customGames:{},gamePoints:{},redeemedRewards:{}
+  },
+  { id:'c2', name:'ม.2/2 วิทยาศาสตร์', icon:'⚗️', color:'#1e3a6e', subject:'วิทยาศาสตร์', level:'ม.2', desc:'ภาคเรียนที่ 2/2567',
+    students:[
+      {id:'6601',name:'วรพล ดีใจ',nick:'แตน',no:1},
+      {id:'6602',name:'ชญานิศ สวัสดี',nick:'นิส',no:2},
+      {id:'6603',name:'ปณิธาน รักดี',nick:'ปาน',no:3},
+      {id:'6604',name:'อาทิตย์ สุขสม',nick:'อาร์ท',no:4},
+    ],
+    assignments:[{name:'งาน 1',max:10},{name:'งาน 2',max:10}],
+    lessons:[{id:1,title:'บทที่ 1 : แรงและการเคลื่อนที่',icon:'⚡',hours:8,desc:'แรงชนิดต่างๆ กฎนิวตัน',obj:['อธิบายกฎนิวตัน 3 ข้อ','คำนวณแรงและความเร่ง'],res:[]}],
+    announcements:[{id:1,text:'⚠️ ส่งงานบท 1 ภายในสัปดาห์หน้า',type:'a'}],
+    dates:['15 มี.ค. 68','19 มี.ค. 68'],
+    attendance:{},scores:{},bonus:{},bonusLog:{},selfCheckin:{},submissions:{},classCode:null,customGames:{},gamePoints:{},redeemedRewards:{}
+  }
+];
+
+// Seed data
+CLS.forEach(cl=>{
+  cl.students.forEach(s=>{
+    cl.scores[s.id]={};
+    cl.assignments.forEach(a=>{const r=Math.random();cl.scores[s.id][a.name]=r>.15?Math.floor(Math.random()*4+7):r>.05?Math.floor(Math.random()*3+3):null;});
+    cl.bonus[s.id]=Math.floor(Math.random()*5);cl.bonusLog[s.id]=[];
+    cl.gamePoints[s.id]=Math.floor(Math.random()*75);cl.redeemedRewards[s.id]=[];
+  });
+  cl.dates.forEach(d=>{cl.attendance[d]={};cl.students.forEach(s=>{const r=Math.random();cl.attendance[d][s.id]=r>.85?'A':r>.75?'L':r>.7?'LV':'P';});});
+  cl.assignments.forEach(a=>{cl.submissions[a.name]={};});
+});
+
+// BASE GAMES
+const BG=[
+  {id:1,icon:'🔬',title:'เซลล์ ม.2 — ปรนัย',cat:'ชีววิทยา',type:'quiz',pts:20,color:'#166534',qs:[
+    {q:'ออร์แกเนลล์ผลิตพลังงาน ATP?',opts:['คลอโรพลาสต์','ไมโทคอนเดรีย','นิวเคลียส','ไรโบโซม'],ans:1},
+    {q:'โครงสร้างในเซลล์พืชแต่ไม่มีในเซลล์สัตว์?',opts:['ไมโทคอนเดรีย','ผนังเซลล์','นิวเคลียส','เยื่อหุ้มเซลล์'],ans:1},
+    {q:'น้ำผ่านเยื่อกึ่งซึมเรียกว่า?',opts:['การแพร่','ออสโมซิส','แอ็กทีฟทรานสปอร์ต','ฟาโกไซโทซิส'],ans:1},
+    {q:'ออร์แกเนลล์สังเคราะห์โปรตีน?',opts:['แวคิวโอล','ไมโทคอนเดรีย','ไรโบโซม','โกลจิ'],ans:2},
+    {q:'DNA อยู่ที่ใดหลัก?',opts:['ไมโทคอนเดรีย','คลอโรพลาสต์','นิวเคลียส','แวคิวโอล'],ans:2},
+    {q:'ไมโทซิสให้เซลล์ลูก?',opts:['1','2','4','8'],ans:1},
+    {q:'สีเขียวของพืชเพราะ?',opts:['แคโรทีน','ไลโคพีน','คลอโรฟิลล์','แอนโทไซยานิน'],ans:2},
+    {q:'ออสโมซิสน้ำเคลื่อนจาก?',opts:['เข้มข้นสูงไปต่ำ','เข้มข้นต่ำไปสูง','อุณหภูมิสูงไปต่ำ','แรงดันสูงไปต่ำ'],ans:1},
+  ]},
+  {id:2,icon:'🌿',title:'การสังเคราะห์แสง — ถูก/ผิด',cat:'ชีววิทยา',type:'truefalse',pts:10,color:'#166534',qs:[
+    {q:'คลอโรพลาสต์เป็นที่เกิดการสังเคราะห์ด้วยแสง',ans:true},
+    {q:'CO₂ เป็นสารตั้งต้นของการสังเคราะห์แสง',ans:true},
+    {q:'การสังเคราะห์แสงเกิดในความมืดได้',ans:false},
+    {q:'O₂ เป็นผลผลิตของการสังเคราะห์แสง',ans:true},
+    {q:'สัตว์สังเคราะห์แสงได้',ans:false},
+    {q:'กลูโคสเป็นผลผลิตของการสังเคราะห์แสง',ans:true},
+  ]},
+  {id:3,icon:'⚡',title:'แรงและการเคลื่อนที่',cat:'ฟิสิกส์',type:'quiz',pts:15,color:'#1e3a6e',qs:[
+    {q:'F=ma เป็นกฎข้อใดของนิวตัน?',opts:['ข้อ 1','ข้อ 2','ข้อ 3','กฎแรงดึงดูด'],ans:1},
+    {q:'หน่วย SI ของแรง?',opts:['จูล','วัตต์','นิวตัน','ปาสกาล'],ans:2},
+    {q:'g ≈ ?',opts:['5 m/s²','9.8 m/s²','12 m/s²','15 m/s²'],ans:1},
+    {q:'แรงต้านการเคลื่อนที่?',opts:['แรงโน้มถ่วง','แรงเสียดทาน','แรงดัน','แรงสปริง'],ans:1},
+    {q:'F=20N, m=4kg, a=?',opts:['5 m/s²','80 m/s²','16 m/s²','0.2 m/s²'],ans:0},
+  ]},
+  {id:4,icon:'⚗️',title:'สสารและการเปลี่ยนแปลง',cat:'เคมี',type:'quiz',pts:15,color:'#7c2d12',qs:[
+    {q:'การเปลี่ยนแปลงทางกายภาพ?',opts:['เกิดสารใหม่','ไม่เกิดสารใหม่','เกิดแก๊ส','เปลี่ยนสี'],ans:1},
+    {q:'การเผาไหม้เป็นการเปลี่ยนแปลงชนิดใด?',opts:['กายภาพ','เคมี','ชีวภาพ','นิวเคลียร์'],ans:1},
+    {q:'ความหนาแน่น = ?',opts:['มวล÷ปริมาตร','ปริมาตร÷มวล','มวล×ปริมาตร','แรง÷พื้นที่'],ans:0},
+    {q:'จุดเดือดน้ำ?',opts:['50°C','80°C','100°C','120°C'],ans:2},
+  ]},
+  {id:5,icon:'🌍',title:'จับคู่วิทยาศาสตร์',cat:'ทักษะวิทย์',type:'memory',pts:15,color:'#1e4a2e',pairs:[
+    {a:'🔬',b:'กล้องจุลทรรศน์'},{a:'⚗️',b:'ขวดรูปกรวย'},{a:'🧬',b:'DNA'},
+    {a:'⚡',b:'ไฟฟ้า'},{a:'🌱',b:'พืช'},{a:'🧲',b:'แม่เหล็ก'},
+    {a:'🌡️',b:'อุณหภูมิ'},{a:'🧪',b:'หลอดทดลอง'},
+  ]},
+  {id:6,icon:'🏎',title:'Speed Quiz รวมทุกหมวด',cat:'ทักษะวิทย์',type:'speedquiz',pts:25,color:'#5b21b6',qs:[
+    {q:'H₂O คือ?',opts:['น้ำ','เกลือ','แก๊ส','กรด'],ans:0,time:5},
+    {q:'g ≈ ?',opts:['5 m/s²','9.8 m/s²','20 m/s²','1 m/s²'],ans:1,time:5},
+    {q:'กรดมี pH?',opts:['>7','=7','<7','=0'],ans:2,time:5},
+    {q:'ออร์แกเนลล์ผลิต ATP?',opts:['คลอโรพลาสต์','ไมโทคอนเดรีย','นิวเคลียส','ไรโบโซม'],ans:1,time:6},
+    {q:'F=10N, m=2kg, a=?',opts:['5 m/s²','20 m/s²','12 m/s²','8 m/s²'],ans:0,time:7},
+    {q:'เซลล์พืชมีแต่สัตว์ไม่มี?',opts:['นิวเคลียส','ผนังเซลล์','ไมโทคอนเดรีย','เยื่อหุ้ม'],ans:1,time:6},
+    {q:'pH < 7 คือ?',opts:['เบส','กลาง','กรด','เกลือ'],ans:2,time:5},
+    {q:'ดาวใกล้ดวงอาทิตย์ที่สุด?',opts:['โลก','ดาวศุกร์','ดาวพุธ','ดาวอังคาร'],ans:2,time:6},
+  ]},
+  {id:7,icon:'🌊',title:'เรียงลำดับ: วัฏจักรน้ำ',cat:'โลก',type:'sortorder',pts:10,color:'#1e4a2e',prompt:'เรียงวัฏจักรน้ำตามลำดับ',items:['การระเหยจากทะเล','ไอน้ำลอยขึ้น','เมฆก่อตัว','ฝนตกลงมา','น้ำไหลสู่ทะเล'],correct:[0,1,2,3,4]},
+];
+
+const REWARDS=[
+  {id:'r1',icon:'🍬',name:'ลูกอม 1 ถุง',cost:100},
+  {id:'r2',icon:'📝',name:'ยกเว้นส่งงาน 1 ชิ้น',cost:100},
+  {id:'r3',icon:'⭐',name:'คะแนนเสริม +5',cost:100},
+  {id:'r4',icon:'🎟',name:'เล่นเกมในคาบ',cost:100},
+  {id:'r5',icon:'🥇',name:'สติกเกอร์รางวัล',cost:50},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let mode='',clsId='',stdId='',curTab='',tp='',sb='',selDate='',gfCat='ทั้งหมด';
+let upImgs=[],upAs='',wvAs='',subV='';
+let AG=null,GS={},spT=null;
+let lbIs=[],lbI=0;
+let ps=0,pn='',pc='',editL=null;
+let codeIntv=null;
+let ftxt='',fsc='';
+let gfType='quiz',egId=null,edQs=[];
+let pickerPool=[];
+
+function C(){return CLS.find(x=>x.id===clsId)||CLS[0];}
+function allG(){return[...BG,...Object.values(C().customGames||{})];}
+function ini(n){return(n||'').substring(0,2);}
+function grade(a){
+  if(a==null)return{g:'—',c:''};
+  if(a>=8.5)return{g:'A',c:'gA'};if(a>=7)return{g:'B',c:'gB'};
+  if(a>=5)return{g:'C',c:'gC'};return{g:'D',c:'gD'};
+}
+function $t(msg,bg='var(--g4)'){
+  const t=document.getElementById('toast');t.innerHTML=msg;t.style.background=bg;t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'),2800);
+}
+function openMdl(h){document.getElementById('mbox').innerHTML=h;document.getElementById('mbg').style.display='flex';}
+function closeMdl(){document.getElementById('mbg').style.display='none';}
+function openLbx(u,i){lbIs=u;lbI=i;document.getElementById('lbxEl').style.display='flex';updLbx();}
+function updLbx(){document.getElementById('lbxi').src=lbIs[lbI];document.getElementById('lbc').textContent=(lbI+1)+'/'+lbIs.length;document.getElementById('lbp').style.opacity=lbI>0?1:.3;document.getElementById('lbn').style.opacity=lbI<lbIs.length-1?1:.3;}
+function lbN(d){lbI=Math.max(0,Math.min(lbIs.length-1,lbI+d));updLbx();}
+function closeLbx(){document.getElementById('lbxEl').style.display='none';}
+function P(){return document.querySelector('.page.on');}
+function tl(t){const m={quiz:'ปรนัย',truefalse:'ถูก/ผิด',memory:'จับคู่',fillblank:'เติมคำ',sortorder:'เรียงลำดับ',speedquiz:'Speed Quiz'};return m[t]||t;}
+
+// ============================================================
+// GATE & LOGIN
+// ============================================================
+function gTeacher(){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('tls').classList.add('on');
+  tp='';updTp();bTNp();
+}
+function updTp(){for(let i=0;i<4;i++){const d=document.getElementById('tp'+i);if(d)d.className='pin-dot'+(i<tp.length?' on':'');}}
+function bTNp(){
+  const c=document.getElementById('tpnp');c.innerHTML='';
+  [1,2,3,4,5,6,7,8,9,'',0,'⌫'].forEach(n=>{
+    const b=document.createElement('button');b.className='np-btn'+(n===''?' ':'');
+    if(n==='')b.style.visibility='hidden';b.textContent=String(n);
+    if(n==='⌫'){b.className+=' del';b.onclick=()=>{tp=tp.slice(0,-1);document.getElementById('tperr').textContent='';updTp();};}
+    else if(n!=='')b.onclick=()=>{if(tp.length<4){tp+=String(n);updTp();if(tp.length===4)setTimeout(subTP,200);}};
+    c.appendChild(b);
+  });
+}
+function subTP(){
+  if(tp===PIN){mode='teacher';document.getElementById('tls').classList.remove('on');bootApp();}
+  else{document.getElementById('tperr').textContent='❌ PIN ไม่ถูกต้อง';tp='';updTp();}
+}
+function gStudent(){
+  document.getElementById('gate').style.display='none';
+  document.getElementById('sls').classList.add('on');
+  sb='';updSb();bSNp();
+}
+function updSb(){
+  const d=document.getElementById('sidd');d.textContent=sb.padEnd(4,'_').split('').join(' ');d.className='idd'+(sb.length?' v':'');
+}
+function bSNp(){
+  const c=document.getElementById('snp');c.innerHTML='';
+  [1,2,3,4,5,6,7,8,9,'',0,'⌫'].forEach(n=>{
+    const b=document.createElement('button');b.className='np-btn'+(n===''?' ':'');
+    if(n==='')b.style.visibility='hidden';b.textContent=String(n);
+    if(n==='⌫'){b.className+=' del';b.onclick=()=>{sb=sb.slice(0,-1);document.getElementById('serr').textContent='';updSb();};}
+    else if(n!=='')b.onclick=()=>{if(sb.length<4){sb+=String(n);updSb();}if(sb.length===4)setTimeout(subSB,200);};
+    c.appendChild(b);
+  });
+  const en=document.createElement('button');en.className='np-btn enter';en.textContent='✓ เข้าสู่ระบบ';en.onclick=subSB;c.appendChild(en);
+}
+function subSB(){
+  let fs=null,fc=null;
+  for(const cl of CLS){const s=cl.students.find(x=>x.id===sb);if(s){fs=s;fc=cl;break;}}
+  if(!fs){document.getElementById('serr').textContent='❌ ไม่พบรหัสในระบบ';sb='';updSb();return;}
+  mode='student';stdId=fs.id;clsId=fc.id;
+  document.getElementById('sls').classList.remove('on');bootApp();
+}
+function backGate(){
+  document.getElementById('tls').classList.remove('on');
+  document.getElementById('sls').classList.remove('on');
+  document.getElementById('gate').style.display='flex';
+}
+function switchMode(){
+  document.getElementById('app').style.display='none';
+  document.getElementById('gate').style.display='flex';
+  mode='';stdId='';clsId='';
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+const TTABS=[
+  {id:'rooms',ic:'🏫',lb:'ห้องเรียน'},
+  {id:'attend',ic:'📋',lb:'เช็คชื่อ'},
+  {id:'scores',ic:'📊',lb:'คะแนน'},
+  {id:'subs',ic:'📬',lb:'งานส่ง'},
+  {id:'lessons',ic:'📚',lb:'บทเรียน'},
+  {id:'gamemgr',ic:'🎮',lb:'เกม'},
+  {id:'settings',ic:'⚙️',lb:'ตั้งค่า'},
+];
+const STABS=[
+  {id:'checkin',ic:'✅',lb:'เช็คชื่อ'},
+  {id:'myscore',ic:'📊',lb:'คะแนน'},
+  {id:'mywork',ic:'📎',lb:'ส่งงาน'},
+  {id:'game',ic:'🎮',lb:'เกม'},
+  {id:'myattend',ic:'📋',lb:'เข้าเรียน'},
+  {id:'lessons',ic:'📚',lb:'บทเรียน'},
+];
+function bootApp(){
+  const app=document.getElementById('app');app.style.display='flex';
+  const cl=C();
+  document.getElementById('hlg').textContent=cl.icon||'🌿';
+  document.getElementById('ht').textContent=mode==='teacher'?'ครู — '+cl.name:cl.name;
+  document.getElementById('hs').textContent=cl.subject+' · '+cl.level+(cl.desc?' · '+cl.desc:'');
+  const b=document.getElementById('mbadge');
+  if(mode==='teacher'){b.className='mb mb-t';b.innerHTML='👩‍🏫 ครูกรีน <span style="opacity:.6;font-size:10px;margin-left:3px;">✕</span>';}
+  else{const s=C().students.find(x=>x.id===stdId);b.className='mb mb-s';b.innerHTML=`👨‍🎓 ${s?.name||''} <span style="opacity:.6;font-size:10px;margin-left:3px;">✕</span>`;}
+  bTabs();switchTab(mode==='teacher'?'rooms':'checkin');
+}
+function updHdr(){
+  const cl=C();
+  document.getElementById('hlg').textContent=cl.icon||'🌿';
+  document.getElementById('ht').textContent=mode==='teacher'?'ครู — '+cl.name:cl.name;
+  document.getElementById('hs').textContent=cl.subject+' · '+cl.level+(cl.desc?' · '+cl.desc:'');
+}
+function bTabs(){
+  const tabs=mode==='teacher'?TTABS:STABS;
+  document.getElementById('tbar').innerHTML=tabs.map(t=>
+    `<div class="tab" id="tb-${t.id}" onclick="switchTab('${t.id}')"><span class="tab-ic">${t.ic}</span>${t.lb}</div>`
+  ).join('');
+}
+function switchTab(id){
+  curTab=id;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  const el=document.getElementById('tb-'+id);if(el)el.classList.add('on');
+  const body=document.getElementById('abody');body.innerHTML='';
+  const pg=document.createElement('div');pg.className='page on';body.appendChild(pg);
+  const R={
+    rooms:rRooms,attend:rAttend,scores:rScores,subs:rSubs,lessons:rLessons,gamemgr:rGameMgr,settings:rSettings,
+    checkin:rCheckin,myscore:rMyScore,mywork:rMyWork,game:rGame,myattend:rMyAttend,rewards:rRewards,
+  };
+  if(R[id])R[id](pg);
+}
+
+// ============================================================
+// ROOM BAR (teacher classroom selector)
+// ============================================================
+function rBar(){
+  return`<div class="rbar">
+    <span style="font-size:12px;color:var(--muted);font-weight:500;flex-shrink:0;">ห้องเรียน:</span>
+    ${CLS.map(cl=>`<div class="chip ${cl.id===clsId?'on':''}" onclick="clsId='${cl.id}';updHdr();switchTab(curTab)">${cl.icon} ${cl.name}</div>`).join('')}
+  </div>`;
+}
+
+// ============================================================
+// TEACHER — ROOMS
+// ============================================================
+function rRooms(p){
+  p.innerHTML=`
+  <div style="background:linear-gradient(135deg,var(--g5),#1e4010);border-radius:var(--r);padding:18px 20px;margin-bottom:13px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="font-size:30px;">🏫</div>
+      <div style="flex:1;"><div style="color:#fff;font-size:16px;font-weight:600;font-family:'Prompt',sans-serif;">ห้องเรียนทั้งหมด</div>
+        <div style="color:var(--g2);font-size:12px;margin-top:2px;">${CLS.length} ห้องเรียน · นักเรียนรวม ${CLS.reduce((s,c)=>s+c.students.length,0)} คน</div></div>
+      <button onclick="oAddRoom()" class="btn btn-p btn-sm">➕ สร้างห้องเรียน</button>
+    </div>
+  </div>
+  ${CLS.map(cl=>`
+  <div class="cls-card">
+    <div style="width:48px;height:48px;border-radius:12px;background:${cl.color}22;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;">${cl.icon}</div>
+    <div style="flex:1;cursor:pointer;" onclick="clsId='${cl.id}';updHdr();switchTab('attend')">
+      <div style="font-size:14.5px;font-weight:500;font-family:'Prompt',sans-serif;">${cl.name}</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:3px;">${cl.subject} · ${cl.level} · <strong>${cl.students.length} นักเรียน</strong> · ${cl.assignments.length} ชิ้นงาน · ${cl.lessons.length} บทเรียน</div>
+      <div style="font-size:11.5px;color:var(--muted);margin-top:1px;">${cl.desc||''}</div>
+    </div>
+    <div style="display:flex;gap:5px;flex-shrink:0;">
+      <button onclick="event.stopPropagation();oEditRoom('${cl.id}')" class="btn btn-s btn-xs">✏️</button>
+      ${CLS.length>1?`<button onclick="event.stopPropagation();delRoom('${cl.id}')" class="btn btn-d btn-xs">🗑</button>`:''}
+    </div>
+  </div>`).join('')}`;
+}
+
+function oAddRoom(){
+  openMdl(`<div class="mhd">🏫 สร้างห้องเรียนใหม่</div>
+  <div class="g2">
+    <div class="fg"><label>ชื่อห้องเรียน</label><input class="input" id="nr-n" placeholder="เช่น ม.2/3 วิทยาศาสตร์"></div>
+    <div class="fg"><label>ไอคอน</label><input class="input" id="nr-i" value="📚" maxlength="4" style="font-size:22px;text-align:center;"></div>
+    <div class="fg"><label>วิชา</label><input class="input" id="nr-s" value="วิทยาศาสตร์"></div>
+    <div class="fg"><label>ชั้นเรียน</label><input class="input" id="nr-l" value="ม.2"></div>
+  </div>
+  <div class="fg"><label>คำอธิบาย</label><input class="input" id="nr-d" placeholder="เช่น ภาคเรียนที่ 1/2568"></div>
+  <div class="mfooter">
+    <button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button>
+    <button onclick="sAddRoom()" class="btn btn-p">➕ สร้าง</button>
+  </div>`);
+}
+function sAddRoom(){
+  const n=document.getElementById('nr-n')?.value.trim();
+  if(!n){$t('⚠️ กรุณาใส่ชื่อ','var(--warn)');return;}
+  const id='c'+Date.now();
+  CLS.push({id,name:n,icon:document.getElementById('nr-i')?.value.trim()||'📚',
+    color:'#166534',subject:document.getElementById('nr-s')?.value.trim()||'วิทยาศาสตร์',
+    level:document.getElementById('nr-l')?.value.trim()||'ม.2',
+    desc:document.getElementById('nr-d')?.value.trim()||'',
+    students:[],assignments:[{name:'งาน 1',max:10}],lessons:[],announcements:[],
+    dates:[],attendance:{},scores:{},bonus:{},bonusLog:{},selfCheckin:{},
+    submissions:{'งาน 1':{}},classCode:null,customGames:{},gamePoints:{},redeemedRewards:{}});
+  clsId=id;updHdr();closeMdl();$t('✅ สร้างห้องเรียน "'+n+'" แล้ว');switchTab('rooms');
+}
+function oEditRoom(id){
+  const cl=CLS.find(x=>x.id===id);if(!cl)return;
+  openMdl(`<div class="mhd">✏️ แก้ไขห้องเรียน</div>
+  <div class="g2">
+    <div class="fg"><label>ชื่อ</label><input class="input" id="er-n" value="${cl.name}"></div>
+    <div class="fg"><label>ไอคอน</label><input class="input" id="er-i" value="${cl.icon}" maxlength="4" style="font-size:22px;text-align:center;"></div>
+    <div class="fg"><label>วิชา</label><input class="input" id="er-s" value="${cl.subject}"></div>
+    <div class="fg"><label>ชั้น</label><input class="input" id="er-l" value="${cl.level}"></div>
+  </div>
+  <div class="fg"><label>คำอธิบาย</label><input class="input" id="er-d" value="${cl.desc}"></div>
+  <div class="mfooter">
+    <button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button>
+    <button onclick="sEditRoom('${id}')" class="btn btn-p">💾 บันทึก</button>
+  </div>`);
+}
+function sEditRoom(id){
+  const cl=CLS.find(x=>x.id===id);if(!cl)return;
+  cl.name=document.getElementById('er-n')?.value.trim()||cl.name;
+  cl.icon=document.getElementById('er-i')?.value.trim()||cl.icon;
+  cl.subject=document.getElementById('er-s')?.value.trim()||cl.subject;
+  cl.level=document.getElementById('er-l')?.value.trim()||cl.level;
+  cl.desc=document.getElementById('er-d')?.value.trim()||cl.desc;
+  closeMdl();updHdr();$t('✅ บันทึกแล้ว');switchTab('rooms');
+}
+function delRoom(id){
+  if(!confirm('ลบห้องเรียนนี้? ข้อมูลทั้งหมดจะหายไป'))return;
+  CLS=CLS.filter(x=>x.id!==id);
+  if(clsId===id)clsId=CLS[0]?.id||'';
+  updHdr();$t('🗑 ลบแล้ว');switchTab('rooms');
+}
+
+// ============================================================
+// TEACHER — SETTINGS (students + PIN + Excel import + random picker)
+// ============================================================
+function rSettings(p){
+  ps=0;pn='';pc='';
+  p.innerHTML=`
+  <div style="background:linear-gradient(135deg,var(--g5),#1e4010);border-radius:var(--r);padding:18px 20px;margin-bottom:13px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="font-size:26px;">⚙️</div>
+      <div><div style="color:#fff;font-size:15px;font-weight:600;font-family:'Prompt',sans-serif;">ตั้งค่าระบบ</div>
+        <div style="color:var(--g2);font-size:12px;margin-top:2px;">PIN · นักเรียน · นำเข้าข้อมูล</div></div>
+    </div>
+  </div>
+
+  <!-- PIN -->
+  <div class="card">
+    <div class="card-hd"><div class="cticon">🔐</div>เปลี่ยน PIN ครู</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:12px;">PIN ปัจจุบัน: <strong style="color:var(--g4);letter-spacing:6px;">●●●●</strong></div>
+    <div id="pin-area">${bPinUI()}</div>
+  </div>
+
+  <!-- STUDENT MANAGER per classroom -->
+  ${CLS.map(cl=>`
+  <div class="card">
+    <div class="card-hd">
+      <div class="cticon">${cl.icon}</div>${cl.name} (${cl.students.length} คน)
+      <div style="margin-left:auto;display:flex;gap:7px;">
+        <button onclick="openPicker('${cl.id}')" class="btn btn-warn btn-sm">🎲 สุ่มชื่อ</button>
+        <button onclick="oImportXlsx('${cl.id}')" class="btn btn-s btn-sm">📊 นำเข้า Excel</button>
+        <button onclick="oAddStd('${cl.id}')" class="btn btn-p btn-sm">➕ เพิ่มนักเรียน</button>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">รูปแบบ Excel: คอลัมน์ A=เลขที่ B=ชื่อ-นามสกุล C=ชื่อเล่น D=รหัส (4 หลัก)</div>
+    ${cl.students.length===0?'<div class="empty">ยังไม่มีนักเรียน</div>':
+    `<div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+        <thead><tr style="background:var(--g1);">
+          <th style="padding:7px 9px;text-align:left;color:var(--g4);font-weight:500;">เลขที่</th>
+          <th style="padding:7px 9px;text-align:left;color:var(--g4);font-weight:500;">ชื่อ-นามสกุล</th>
+          <th style="padding:7px 9px;text-align:left;color:var(--g4);font-weight:500;">ชื่อเล่น</th>
+          <th style="padding:7px 9px;text-align:left;color:var(--g4);font-weight:500;">รหัส</th>
+          <th style="padding:7px 9px;text-align:center;">จัดการ</th>
+        </tr></thead>
+        <tbody>
+          ${cl.students.map(s=>`<tr style="border-bottom:.5px solid var(--b1);">
+            <td style="padding:7px 9px;">${s.no||''}</td>
+            <td style="padding:7px 9px;font-weight:500;">${s.name}</td>
+            <td style="padding:7px 9px;color:var(--muted);">${s.nick||''}</td>
+            <td style="padding:7px 9px;font-family:'Prompt',sans-serif;font-weight:600;color:var(--g4);">${s.id}</td>
+            <td style="padding:7px 9px;text-align:center;">
+              <div style="display:flex;gap:5px;justify-content:center;">
+                <button onclick="oEditStd('${cl.id}','${s.id}')" class="btn btn-s btn-xs">✏️</button>
+                <button onclick="delStd('${cl.id}','${s.id}')" class="btn btn-d btn-xs">🗑</button>
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`}
+  </div>`).join('')}
+
+  <!-- DANGER ZONE -->
+  <div class="card" style="border-color:#fca5a5;">
+    <div class="card-hd" style="color:var(--err);border-color:#fca5a5;"><div class="cticon" style="background:#fef2f2;">⚠️</div>โซนอันตราย</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button onclick="if(confirm('รีเซ็ตคะแนนเกมทั้งหมด?')){CLS.forEach(cl=>cl.students.forEach(s=>{cl.gamePoints[s.id]=0;cl.redeemedRewards[s.id]=[]}));$t('✅ รีเซ็ตแล้ว');}" class="btn btn-d btn-sm">🔄 รีเซ็ตคะแนนเกม</button>
+      <button onclick="if(confirm('รีเซ็ตคะแนนเสริมทั้งหมด?')){CLS.forEach(cl=>cl.students.forEach(s=>{cl.bonus[s.id]=0;cl.bonusLog[s.id]=[]}));$t('✅ รีเซ็ตแล้ว');}" class="btn btn-d btn-sm">🔄 รีเซ็ตคะแนนเสริม</button>
+    </div>
+  </div>`;
+}
+
+// PIN CHANGE
+function bPinUI(){
+  if(ps===0)return`<button onclick="ps=1;pn='';rPA()" class="btn btn-s">🔑 เปลี่ยน PIN ใหม่</button>`;
+  const buf=ps===1?pn:pc;
+  return`<div style="text-align:center;max-width:260px;margin:0 auto;">
+    <div style="font-size:13px;font-weight:500;color:var(--g4);margin-bottom:9px;">${ps===1?'กรอก PIN ใหม่':'ยืนยัน PIN'}</div>
+    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:11px;">
+      ${[0,1,2,3].map(i=>`<div style="width:15px;height:15px;border-radius:50%;background:${i<buf.length?'var(--g3)':'rgba(99,153,34,.2)'};border:2px solid ${i<buf.length?'var(--g3)':'var(--b2)'};transition:all .15s;"></div>`).join('')}
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+      ${[1,2,3,4,5,6,7,8,9,'',0,'⌫'].map(n=>`<button onclick="pinD('${n}')" style="padding:12px;border-radius:var(--rs);border:1px solid var(--b2);background:var(--sur);font-size:18px;font-weight:600;cursor:pointer;font-family:'Prompt',sans-serif;${n===''?'visibility:hidden;':''}">${n}</button>`).join('')}
+    </div>
+    <button onclick="ps=0;rPA()" style="margin-top:10px;font-size:12.5px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;">ยกเลิก</button>
+  </div>`;
+}
+function rPA(){const a=document.getElementById('pin-area');if(a)a.innerHTML=bPinUI();}
+function pinD(n){
+  if(n==='⌫'){if(ps===1)pn=pn.slice(0,-1);else pc=pc.slice(0,-1);}
+  else if(n!==''&&(ps===1?pn:pc).length<4){if(ps===1)pn+=String(n);else pc+=String(n);}
+  rPA();
+  if((ps===1?pn:pc).length===4){
+    if(ps===1){ps=2;pc='';setTimeout(rPA,200);}
+    else setTimeout(()=>{
+      if(pc===pn){PIN=pn;ps=0;pn='';pc='';$t('✅ เปลี่ยน PIN เป็น '+PIN+' แล้ว!');rPA();}
+      else{$t('❌ PIN ไม่ตรงกัน','var(--err)');ps=1;pn='';pc='';rPA();}
+    },200);
+  }
+}
+
+// ADD STUDENT
+function oAddStd(cid){
+  openMdl(`<div class="mhd">👤 เพิ่มนักเรียน</div>
+  <div class="g2">
+    <div class="fg"><label>เลขที่</label><input type="number" class="input" id="as-no" min="1" max="50" placeholder="เช่น 9"></div>
+    <div class="fg"><label>รหัส (4 หลัก)</label><input class="input" id="as-id" maxlength="4" placeholder="เช่น 6510"></div>
+    <div class="fg"><label>ชื่อ-นามสกุล</label><input class="input" id="as-n" placeholder="ชื่อเต็ม"></div>
+    <div class="fg"><label>ชื่อเล่น</label><input class="input" id="as-k" placeholder="ชื่อเล่น"></div>
+  </div>
+  <div class="mfooter">
+    <button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button>
+    <button onclick="sAddStd('${cid}')" class="btn btn-p">➕ เพิ่ม</button>
+  </div>`);
+}
+function sAddStd(cid){
+  const cl=CLS.find(x=>x.id===cid);
+  const name=document.getElementById('as-n')?.value.trim();
+  const nick=document.getElementById('as-k')?.value.trim()||name;
+  const id=document.getElementById('as-id')?.value.trim();
+  const no=parseInt(document.getElementById('as-no')?.value)||0;
+  if(!name||!id){$t('⚠️ กรุณาใส่ชื่อและรหัส','var(--warn)');return;}
+  if(id.length!==4){$t('⚠️ รหัสต้อง 4 หลัก','var(--warn)');return;}
+  if(CLS.some(c=>c.students.find(s=>s.id===id))){$t('⚠️ รหัสนี้มีในระบบแล้ว','var(--warn)');return;}
+  cl.students.push({id,name,nick,no});
+  cl.students.sort((a,b)=>(a.no||0)-(b.no||0));
+  cl.scores[id]={};cl.assignments.forEach(a=>cl.scores[id][a.name]=null);
+  cl.bonus[id]=0;cl.bonusLog[id]=[];cl.gamePoints[id]=0;cl.redeemedRewards[id]=[];
+  closeMdl();$t(`✅ เพิ่ม ${name} แล้ว`);rSettings(P());
+}
+
+// EDIT STUDENT
+function oEditStd(cid,sid){
+  const cl=CLS.find(x=>x.id===cid);const s=cl?.students.find(x=>x.id===sid);if(!s)return;
+  openMdl(`<div class="mhd">✏️ แก้ไขข้อมูลนักเรียน</div>
+  <div class="g2">
+    <div class="fg"><label>เลขที่</label><input type="number" class="input" id="es-no" value="${s.no||''}" min="1"></div>
+    <div class="fg"><label>รหัส</label><input class="input" id="es-id" value="${s.id}" maxlength="4"></div>
+    <div class="fg"><label>ชื่อ-นามสกุล</label><input class="input" id="es-n" value="${s.name}"></div>
+    <div class="fg"><label>ชื่อเล่น</label><input class="input" id="es-k" value="${s.nick||''}"></div>
+  </div>
+  <div class="mfooter">
+    <button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button>
+    <button onclick="sEditStd('${cid}','${sid}')" class="btn btn-p">💾 บันทึก</button>
+  </div>`);
+}
+function sEditStd(cid,sid){
+  const cl=CLS.find(x=>x.id===cid);const s=cl?.students.find(x=>x.id===sid);if(!s)return;
+  const newId=document.getElementById('es-id')?.value.trim();
+  if(newId&&newId!==sid&&CLS.some(c=>c.students.find(x=>x.id===newId))){$t('⚠️ รหัสนี้มีในระบบแล้ว','var(--warn)');return;}
+  s.name=document.getElementById('es-n')?.value.trim()||s.name;
+  s.nick=document.getElementById('es-k')?.value.trim()||s.nick;
+  s.no=parseInt(document.getElementById('es-no')?.value)||s.no;
+  if(newId&&newId!==sid&&newId.length===4){
+    // migrate data to new id
+    s.id=newId;
+    ['scores','bonus','bonusLog','gamePoints','redeemedRewards'].forEach(k=>{
+      if(cl[k][sid]!==undefined){cl[k][newId]=cl[k][sid];delete cl[k][sid];}
+    });
+  }
+  cl.students.sort((a,b)=>(a.no||0)-(b.no||0));
+  closeMdl();$t('✅ บันทึกแล้ว');rSettings(P());
+}
+function delStd(cid,sid){
+  if(!confirm('ลบนักเรียนนี้?'))return;
+  const cl=CLS.find(x=>x.id===cid);
+  cl.students=cl.students.filter(s=>s.id!==sid);
+  ['scores','bonus','bonusLog','gamePoints','redeemedRewards'].forEach(k=>delete cl[k][sid]);
+  $t('🗑 ลบนักเรียนแล้ว');rSettings(P());
+}
+
+// EXCEL IMPORT
+function oImportXlsx(cid){
+  openMdl(`<div class="mhd">📊 นำเข้ารายชื่อจาก Excel</div>
+  <div style="background:var(--g1);border-radius:var(--rs);padding:12px 14px;margin-bottom:13px;font-size:13px;color:var(--g4);line-height:1.8;">
+    <strong>รูปแบบ Excel (.xlsx / .xls / .csv):</strong><br>
+    คอลัมน์ <strong>A</strong> = เลขที่ &nbsp;|&nbsp; <strong>B</strong> = ชื่อ-นามสกุล<br>
+    คอลัมน์ <strong>C</strong> = ชื่อเล่น &nbsp;|&nbsp; <strong>D</strong> = รหัสนักเรียน (4 หลัก)<br>
+    <span style="color:var(--muted);font-size:12px;">ถ้าไม่มีรหัส ระบบจะสร้างให้อัตโนมัติ · ข้อมูลเดิมจะถูกแทนที่</span>
+  </div>
+  <div style="position:relative;border:2px dashed var(--b2);border-radius:var(--r);padding:28px;text-align:center;background:var(--bg);cursor:pointer;" onclick="document.getElementById('xlf').click()">
+    <input type="file" id="xlf" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importXlsx(this,'${cid}')">
+    <div style="font-size:34px;margin-bottom:9px;">📊</div>
+    <div style="font-size:13px;font-weight:500;color:var(--g4);">คลิกหรือลากไฟล์มาวาง</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:4px;">Excel (.xlsx, .xls) หรือ CSV</div>
+  </div>
+  <div id="xl-preview" style="margin-top:12px;"></div>
+  <div class="mfooter">
+    <button onclick="closeMdl()" class="btn btn-s">ปิด</button>
+  </div>`);
+}
+function importXlsx(input,cid){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=new Uint8Array(e.target.result);
+      const wb=XLSX.read(data,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      const cl=CLS.find(x=>x.id===cid);if(!cl)return;
+      let added=0,skipped=0;
+      const prev=document.getElementById('xl-preview');
+      let prevHtml='<div style="max-height:200px;overflow-y:auto;margin-top:8px;"><table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:var(--g1);"><th style="padding:5px 8px;">เลขที่</th><th style="padding:5px 8px;">ชื่อ</th><th style="padding:5px 8px;">ชื่อเล่น</th><th style="padding:5px 8px;">รหัส</th><th style="padding:5px 8px;">สถานะ</th></tr></thead><tbody>';
+      rows.forEach((row,ri)=>{
+        if(ri===0&&isNaN(parseInt(row[0])))return;// skip header
+        const no=parseInt(row[0])||ri;
+        const name=String(row[1]||'').trim();
+        const nick=String(row[2]||'').trim();
+        let id=String(row[3]||'').trim().replace(/\D/g,'').padStart(4,'0').slice(-4);
+        if(!name){skipped++;return;}
+        if(!id||id==='0000'){
+          // auto generate: last 4 digits based on hash
+          id=String(1000+((name.split('').reduce((s,c)=>s+c.charCodeAt(0),0)+no)%9000)).slice(-4);
+        }
+        if(id.length!==4)id=id.padStart(4,'0').slice(-4);
+        // check duplicate across all classes
+        const dup=CLS.some(c=>c.students.find(s=>s.id===id&&c.id!==cid))||(cl.students.find(s=>s.id===id&&s.name!==name));
+        if(dup){
+          // make unique
+          let base=parseInt(id);
+          while(CLS.some(c=>c.students.find(s=>s.id===String(base).padStart(4,'0'))))base++;
+          id=String(base).padStart(4,'0').slice(-4);
+        }
+        const existing=cl.students.find(s=>s.id===id||s.name===name);
+        if(existing){existing.no=no;existing.name=name;existing.nick=nick||existing.nick;}
+        else{
+          cl.students.push({id,name,nick:nick||name,no});
+          cl.scores[id]={};cl.assignments.forEach(a=>cl.scores[id][a.name]=null);
+          cl.bonus[id]=0;cl.bonusLog[id]=[];cl.gamePoints[id]=0;cl.redeemedRewards[id]=[];
+          added++;
+        }
+        prevHtml+=`<tr style="border-bottom:.5px solid var(--b1);"><td style="padding:5px 8px;">${no}</td><td style="padding:5px 8px;">${name}</td><td style="padding:5px 8px;">${nick||'-'}</td><td style="padding:5px 8px;font-family:'Prompt',sans-serif;font-weight:600;color:var(--g4);">${id}</td><td style="padding:5px 8px;"><span style="color:var(--ok);font-size:11px;">✓</span></td></tr>`;
+      });
+      cl.students.sort((a,b)=>(a.no||0)-(b.no||0));
+      prevHtml+='</tbody></table></div>';
+      prevHtml+=`<div style="font-size:12.5px;color:var(--g4);margin-top:8px;font-weight:500;">✅ นำเข้าสำเร็จ ${added} คน</div>`;
+      if(prev)prev.innerHTML=prevHtml;
+      $t(`✅ นำเข้า ${added} คนจาก Excel`);
+    }catch(err){$t('❌ ไม่สามารถอ่านไฟล์ได้: '+err.message,'var(--err)');}
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// RANDOM PICKER
+function openPicker(cid){
+  const cl=CLS.find(x=>x.id===cid)||C();
+  pickerPool=cl.students.length?[...cl.students]:[{id:'?',name:'ไม่มีนักเรียน',nick:'',no:0}];
+  document.getElementById('picker').style.display='flex';
+  doSpin();
+}
+function closePicker(){document.getElementById('picker').style.display='none';}
+let spinIntv=null,spinCount=0;
+function doSpin(){
+  if(spinIntv)clearInterval(spinIntv);
+  spinCount=0;
+  const nm=document.getElementById('pk-name');
+  const nk=document.getElementById('pk-nick');
+  const nu=document.getElementById('pk-num');
+  const btn=document.getElementById('pk-btn');
+  btn.disabled=true;nm.classList.add('picker-spinning');
+  spinIntv=setInterval(()=>{
+    const r=pickerPool[Math.floor(Math.random()*pickerPool.length)];
+    nm.textContent=r.name;nk.textContent=r.nick?'('+r.nick+')':'';
+    nu.textContent=r.no?'เลขที่ '+r.no:'';
+    spinCount++;
+    if(spinCount>25){
+      clearInterval(spinIntv);spinIntv=null;
+      nm.classList.remove('picker-spinning');btn.disabled=false;
+    }
+  },80);
+}
+
+// ============================================================
+// TEACHER — ATTEND
+// ============================================================
+function rAttend(p){
+  const cl=C();
+  if(!cl.dates.length)selDate='';
+  else if(!selDate||!cl.dates.includes(selDate))selDate=cl.dates[cl.dates.length-1]||'';
+  const att=cl.attendance[selDate]||{};
+  const present=cl.students.filter(s=>att[s.id]==='P').length;
+  const ca=cl.classCode&&Date.now()<cl.classCode.expiry;
+  p.innerHTML=`
+  ${rBar()}
+  <div style="background:linear-gradient(135deg,var(--g5),#1e4010);border-radius:var(--r);padding:16px 18px;margin-bottom:13px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+      <div style="font-size:22px;">🔑</div>
+      <div style="flex:1;color:#fff;font-size:14px;font-weight:500;font-family:'Prompt',sans-serif;">รหัสเช็คชื่อประจำคาบ</div>
+      <span style="font-size:11px;padding:3px 10px;border-radius:20px;${ca?'background:rgba(192,221,151,.2);color:var(--g2);border:1px solid rgba(192,221,151,.3)':'background:rgba(255,255,255,.08);color:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.12)'};">${ca?'กำลังใช้งาน':'ไม่มีรหัส'}</span>
+    </div>
+    <div style="background:rgba(0,0,0,.3);border:2px dashed ${ca?'rgba(192,221,151,.6)':'rgba(255,255,255,.15)'};border-radius:12px;padding:16px;text-align:center;margin-bottom:12px;">
+      <div id="cd" style="font-size:44px;font-weight:700;letter-spacing:14px;color:${ca?'#c0dd97':'rgba(255,255,255,.2)'};font-family:'Prompt',sans-serif;margin-bottom:7px;">${ca?cl.classCode.code:'- - - -'}</div>
+      <div id="cdw" ${ca?'':'style="display:none;"'}><div style="height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;"><div id="cdb" style="height:100%;border-radius:3px;background:var(--g2);width:100%;transition:width 1s linear;"></div></div></div>
+      <div id="cdl" style="font-size:12px;color:${ca?'var(--g2)':'rgba(255,255,255,.3)'};margin-top:5px;">${ca?'กำลังนับถอยหลัง...':'แสดงบนกระดาน · นักเรียนกรอกรหัสในแอป'}</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;">
+      <select id="cdur" style="background:rgba(255,255,255,.1);border:1px solid rgba(192,221,151,.3);color:#fff;border-radius:7px;padding:5px 8px;font-size:12px;font-family:'Sarabun',sans-serif;cursor:pointer;">
+        <option value="3">3 นาที</option><option value="5" selected>5 นาที</option><option value="10">10 นาที</option><option value="15">15 นาที</option>
+      </select>
+      <button onclick="genCode()" style="padding:8px 17px;background:var(--g3);color:#fff;border:none;border-radius:var(--rs);font-size:13px;cursor:pointer;font-family:'Sarabun',sans-serif;font-weight:500;">🎲 สร้างรหัส</button>
+      ${ca?`<button onclick="expCode()" style="padding:8px 14px;background:rgba(255,80,80,.15);color:#fca5a5;border:1px solid rgba(255,100,100,.3);border-radius:var(--rs);font-size:13px;cursor:pointer;font-family:'Sarabun',sans-serif;">หมดอายุ</button>`:''}
+      <button onclick="openPicker('${cl.id}')" style="padding:8px 14px;background:rgba(255,215,0,.18);color:gold;border:1px solid rgba(255,215,0,.3);border-radius:var(--rs);font-size:13px;cursor:pointer;font-family:'Sarabun',sans-serif;">🎲 สุ่มชื่อ</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="cticon">📅</div>วันที่เช็คชื่อ
+      <button onclick="oAddDate()" class="btn btn-s btn-sm" style="margin-left:auto;">➕ เพิ่มวัน</button>
+    </div>
+    <div class="chips">${cl.dates.map(d=>`<div class="chip ${d===selDate?'on':''}" onclick="selDate='${d}';rAttend(P())">${d}</div>`).join('')}</div>
+  </div>
+  <div class="card">
+    <div class="card-hd">
+      <div class="cticon">👥</div>รายชื่อ${selDate?' · '+selDate:''}
+      <span id="acnt" style="margin-left:auto;font-size:12px;color:var(--muted);">มา ${present}/${cl.students.length}</span>
+    </div>
+    <input class="input" placeholder="🔍 ค้นหา..." oninput="ftxt=this.value.toLowerCase();rAttend(P())" value="${ftxt}" style="margin-bottom:11px;">
+    <div id="alist">${bAttL()}</div>
+    <div style="display:flex;gap:7px;justify-content:space-between;margin-top:12px;flex-wrap:wrap;">
+      <div style="display:flex;gap:7px;">
+        <button onclick="mAll('P')" class="btn btn-s btn-sm">✓ มาทั้งหมด</button>
+        <button onclick="mAll('A')" class="btn btn-s btn-sm" style="color:var(--err);">✗ ขาดทั้งหมด</button>
+      </div>
+      <button onclick="saveAtt()" class="btn btn-p btn-sm">💾 บันทึก</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="cticon">📊</div>สรุปรายคน</div>
+    ${cl.students.map(s=>{
+      const cnt={P:0,A:0,L:0,LV:0};
+      cl.dates.forEach(d=>{const v=(cl.attendance[d]||{})[s.id];if(v)cnt[v]++;});
+      return`<div class="srow"><div class="av">${ini(s.name)}</div><div style="flex:1"><div class="sname">${s.no?s.no+'. ':''  }${s.name}</div><div class="smeta">${s.id}</div></div>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <span class="badge bp">${cnt.P} มา</span>
+          ${cnt.A?`<span class="badge ba">${cnt.A} ขาด</span>`:''}
+          ${cnt.L?`<span class="badge bl">${cnt.L} สาย</span>`:''}
+          ${cnt.LV?`<span class="badge blv">${cnt.LV} ลา</span>`:''}
+        </div></div>`;
+    }).join('')}
+  </div>`;
+  if(ca)startCodeUI();
+}
+function bAttL(){
+  const cl=C();const att=cl.attendance[selDate]||{};
+  const f=cl.students.filter(s=>!ftxt||s.name.includes(ftxt)||s.id.includes(ftxt));
+  if(!f.length)return'<div class="empty">ไม่พบนักเรียน</div>';
+  return f.map(s=>{const cur=att[s.id]||'P';return`<div class="srow">
+    <div class="av">${ini(s.name)}</div>
+    <div style="flex:1"><div class="sname">${s.no?s.no+'. ':''  }${s.name} <span style="color:var(--muted);font-size:11px;">(${s.nick})</span></div><div class="smeta">${s.id}</div></div>
+    <div style="display:flex;gap:3px;">
+      <button class="ab ab-p ${cur==='P'?'sel':''}" onclick="setAtt('${s.id}','P')">มา</button>
+      <button class="ab ab-a ${cur==='A'?'sel':''}" onclick="setAtt('${s.id}','A')">ขาด</button>
+      <button class="ab ab-l ${cur==='L'?'sel':''}" onclick="setAtt('${s.id}','L')">สาย</button>
+      <button class="ab ab-v ${cur==='LV'?'sel':''}" onclick="setAtt('${s.id}','LV')">ลา</button>
+    </div></div>`;}).join('');
+}
+function setAtt(sid,st){
+  const cl=C();if(!cl.attendance[selDate])cl.attendance[selDate]={};
+  cl.attendance[selDate][sid]=st;
+  const el=document.getElementById('alist');if(el)el.innerHTML=bAttL();
+  const cn=document.getElementById('acnt');if(cn){const p=cl.students.filter(s=>(cl.attendance[selDate]||{})[s.id]==='P').length;cn.textContent=`มา ${p}/${cl.students.length}`;}
+}
+function mAll(st){const cl=C();if(!cl.attendance[selDate])cl.attendance[selDate]={};cl.students.forEach(s=>cl.attendance[selDate][s.id]=st);rAttend(P());}
+function saveAtt(){const cl=C();const p=cl.students.filter(s=>(cl.attendance[selDate]||{})[s.id]==='P').length;$t(`✅ บันทึก ${selDate} — มา ${p}/${cl.students.length}`);}
+function oAddDate(){
+  openMdl(`<div class="mhd">📅 เพิ่มวันเช็คชื่อ</div>
+  <div class="fg"><label>เลือกวันที่</label><input type="date" class="input" id="nd" value="${new Date().toISOString().split('T')[0]}"></div>
+  <div class="mfooter"><button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button><button onclick="sDate()" class="btn btn-p">➕ เพิ่ม</button></div>`);
+}
+function sDate(){
+  const v=document.getElementById('nd')?.value;if(!v)return;
+  const cl=C();const d=new Date(v);const lbl=d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});
+  if(!cl.dates.includes(lbl)){cl.dates.push(lbl);cl.attendance[lbl]={};cl.students.forEach(s=>cl.attendance[lbl][s.id]='P');selDate=lbl;}
+  closeMdl();rAttend(P());
+}
+function genCode(){
+  const cl=C();const code=String(Math.floor(1000+Math.random()*9000));
+  const mins=parseInt(document.getElementById('cdur')?.value||'5');
+  cl.classCode={code,expiry:Date.now()+mins*60000,dur:mins*60000};
+  if(codeIntv)clearInterval(codeIntv);
+  $t('🔑 สร้างรหัส '+code+' แล้ว!');rAttend(P());
+}
+function expCode(){const cl=C();cl.classCode=null;if(codeIntv)clearInterval(codeIntv);$t('🔑 รหัสหมดอายุ');rAttend(P());}
+function startCodeUI(){
+  const cl=C();if(codeIntv)clearInterval(codeIntv);
+  codeIntv=setInterval(()=>{
+    const left=cl.classCode.expiry-Date.now();
+    const bar=document.getElementById('cdb');const lbl=document.getElementById('cdl');
+    if(!bar){clearInterval(codeIntv);return;}
+    if(left<=0){clearInterval(codeIntv);cl.classCode=null;rAttend(P());return;}
+    const pct=Math.round((left/cl.classCode.dur)*100);
+    const col=left<60000?'#f09595':left<120000?'#EF9F27':'var(--g2)';
+    const m=Math.floor(left/60000),s=Math.floor((left%60000)/1000);
+    bar.style.width=pct+'%';bar.style.background=col;
+    lbl.style.color=col;lbl.textContent=`หมดอายุใน ${m}:${String(s).padStart(2,'0')}`;
+  },1000);
+}
+
+// ============================================================
+// TEACHER — SCORES + BONUS + ANNOUNCEMENTS
+// ============================================================
+function rScores(p){
+  const cl=C();
+  p.innerHTML=`
+  ${rBar()}
+  <div class="card">
+    <div class="card-hd"><div class="cticon">📝</div>คะแนนส่งงาน
+      <div style="margin-left:auto;display:flex;gap:7px;">
+        <button onclick="oBonusAll()" class="btn btn-warn btn-sm">⭐ คะแนนเสริม</button>
+        <button onclick="oAddAssign()" class="btn btn-p btn-sm">➕ เพิ่มงาน</button>
+      </div>
+    </div>
+    <input class="input" placeholder="🔍 ค้นหา..." oninput="fsc=this.value.toLowerCase();rScores(P())" value="${fsc}" style="margin-bottom:11px;">
+    <div style="overflow-x:auto;">${bScoreT()}</div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="cticon">📢</div>ประกาศและกำหนดการ
+      <button onclick="oAddAnn()" class="btn btn-p btn-sm" style="margin-left:auto;">➕ เพิ่มประกาศ</button>
+    </div>
+    ${!cl.announcements.length?'<div class="empty">ยังไม่มีประกาศ</div>':
+    cl.announcements.map((a,i)=>`<div class="notice n${a.type||'g'}" style="margin-bottom:8px;">
+      <span style="flex:1">${a.text}</span>
+      <button onclick="delAnn(${i})" style="background:none;border:none;cursor:pointer;font-size:14px;opacity:.5;">✕</button>
+    </div>`).join('')}
+  </div>`;
+}
+function bScoreT(){
+  const cl=C();
+  const f=cl.students.filter(s=>!fsc||s.name.toLowerCase().includes(fsc)||s.id.includes(fsc));
+  const hd=`<thead><tr><th>ชื่อ</th>${cl.assignments.map(a=>`<th style="text-align:center;min-width:55px">${a.name}</th>`).join('')}<th style="text-align:center;min-width:75px;background:#fffbeb;color:#92400e;">⭐ เสริม</th><th style="text-align:center">เฉลี่ย</th><th style="text-align:center">เกรด</th></tr></thead>`;
+  const bd=f.map(s=>{
+    const sc=cl.scores[s.id]||{};
+    const vals=cl.assignments.map(a=>sc[a.name]).filter(v=>v!=null);
+    const avg=vals.length?(vals.reduce((a,b)=>a+b)/vals.length):null;
+    const bv=cl.bonus[s.id]||0;const{g,c}=grade(avg);
+    const cells=cl.assignments.map(a=>{const v=sc[a.name];
+      if(v==null)return`<td style="text-align:center"><span style="color:var(--muted);font-size:12px;">—</span></td>`;
+      return`<td style="text-align:center;cursor:pointer;" onclick="editScore('${s.id}','${a.name}',${a.max})" title="คลิกเพื่อแก้ไข">
+        <span style="font-size:13px;font-weight:500;color:${v>=8?'var(--ok)':v>=6?'var(--warn)':'var(--err)'};">${v}</span>
+        <div style="height:4px;border-radius:2px;background:var(--g1);overflow:hidden;width:40px;margin:2px auto 0;"><div style="height:100%;background:var(--g3);width:${(v/a.max)*100}%;border-radius:2px;"></div></div>
+      </td>`;
+    }).join('');
+    const bc=`<td style="text-align:center;background:#fffbeb;">
+      <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
+        <button onclick="qBonus('${s.id}','cut')" style="width:20px;height:20px;border-radius:50%;background:#fef2f2;border:1px solid #fca5a5;cursor:pointer;font-size:12px;color:var(--err);">−</button>
+        <span style="font-size:13px;font-weight:600;min-width:22px;color:${bv>0?'#92400e':bv<0?'var(--err)':'var(--muted)'};">${bv>0?'+'+bv:bv}</span>
+        <button onclick="qBonus('${s.id}','add')" style="width:20px;height:20px;border-radius:50%;background:#fffbeb;border:1px solid #fcd34d;cursor:pointer;font-size:12px;color:#92400e;">+</button>
+      </div></td>`;
+    return`<tr><td><div class="sname">${s.no?s.no+'. ':''  }${s.name}</div><div class="smeta">${s.id}</div></td>${cells}${bc}<td style="text-align:center;font-weight:500;font-size:13px;color:var(--g4)">${avg!=null?avg.toFixed(1):'—'}</td><td style="text-align:center"><span class="${c}" style="font-weight:700;">${g}</span></td></tr>`;
+  }).join('');
+  return`<table class="stbl">${hd}<tbody>${bd}</tbody></table>`;
+}
+function editScore(sid,aname,max){
+  const cl=C();const cur=(cl.scores[sid]||{})[aname];
+  openMdl(`<div class="mhd">✏️ แก้ไขคะแนน</div>
+  <div style="text-align:center;margin-bottom:14px;">
+    <div style="font-size:13px;color:var(--muted);">นักเรียน: <strong style="color:var(--g4);">${cl.students.find(s=>s.id===sid)?.name||sid}</strong></div>
+    <div style="font-size:13px;color:var(--muted);">ชิ้นงาน: <strong style="color:var(--g4);">${aname}</strong> (คะแนนเต็ม ${max})</div>
+  </div>
+  <div class="fg"><label>คะแนนที่ได้</label>
+    <input type="number" class="input" id="sc-v" value="${cur!=null?cur:''}" min="0" max="${max}" placeholder="0–${max}" style="font-size:22px;text-align:center;font-weight:700;">
+  </div>
+  <div class="mfooter">
+    <button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button>
+    <button onclick="saveScore('${sid}','${aname}')" class="btn btn-p">💾 บันทึก</button>
+  </div>`);
+}
+function saveScore(sid,aname){
+  const cl=C();const v=document.getElementById('sc-v')?.value;
+  const n=v===''||v===null?null:parseFloat(v);
+  if(n!==null&&(isNaN(n)||n<0)){$t('⚠️ คะแนนไม่ถูกต้อง','var(--warn)');return;}
+  if(!cl.scores[sid])cl.scores[sid]={};
+  cl.scores[sid][aname]=n;
+  closeMdl();$t('✅ บันทึกคะแนนแล้ว');rScores(P());
+}
+function oAddAssign(){
+  openMdl(`<div class="mhd">📝 เพิ่มชิ้นงาน</div>
+  <div class="g2">
+    <div class="fg"><label>ชื่องาน</label><input class="input" id="na-n" placeholder="เช่น งาน 4"></div>
+    <div class="fg"><label>คะแนนเต็ม</label><input type="number" class="input" id="na-m" value="10" min="1" max="100"></div>
+  </div>
+  <div class="mfooter"><button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button><button onclick="sAddAssign()" class="btn btn-p">➕ เพิ่ม</button></div>`);
+}
+function sAddAssign(){
+  const cl=C();const n=document.getElementById('na-n')?.value.trim();
+  if(!n){$t('⚠️ กรุณาใส่ชื่องาน','var(--warn)');return;}
+  const mx=parseInt(document.getElementById('na-m')?.value)||10;
+  cl.assignments.push({name:n,max:mx});
+  cl.students.forEach(s=>{if(!cl.scores[s.id])cl.scores[s.id]={};cl.scores[s.id][n]=null;});
+  if(!cl.submissions[n])cl.submissions[n]={};
+  closeMdl();$t('✅ เพิ่ม "'+n+'" แล้ว');rScores(P());
+}
+function oAddAnn(){
+  openMdl(`<div class="mhd">📢 เพิ่มประกาศ</div>
+  <div class="fg"><label>ข้อความ</label><textarea class="input" id="an-t" placeholder="เช่น 📌 ส่งงานภายใน..."></textarea></div>
+  <div class="fg"><label>ประเภท</label><select class="input" id="an-c">
+    <option value="g">🟢 เขียว</option><option value="b">🔵 น้ำเงิน</option><option value="a">🟡 เหลือง</option><option value="r">🔴 แดง</option>
+  </select></div>
+  <div class="mfooter"><button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button><button onclick="sAddAnn()" class="btn btn-p">➕ เพิ่ม</button></div>`);
+}
+function sAddAnn(){
+  const cl=C();const text=document.getElementById('an-t')?.value.trim();
+  if(!text){$t('⚠️ กรุณาใส่ข้อความ','var(--warn)');return;}
+  cl.announcements.push({id:Date.now(),text,type:document.getElementById('an-c')?.value||'g'});
+  closeMdl();$t('✅ เพิ่มประกาศแล้ว');rScores(P());
+}
+function delAnn(i){C().announcements.splice(i,1);rScores(P());}
+
+let _bTgt='',_bTyp='add';
+function qBonus(sid,type){
+  const cl=C();const s=cl.students.find(x=>x.id===sid);_bTgt=sid;_bTyp=type;
+  openMdl(`<div class="mhd">${type==='add'?'⭐ เพิ่ม':'🔻 ลด'}คะแนนเสริม — ${s?.name||''}</div>
+  <div class="fg"><label>จำนวนคะแนน</label>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button onclick="let v=parseInt(document.getElementById('bn-a').value)||1;if(v>1)document.getElementById('bn-a').value=v-1;" style="width:32px;height:32px;border-radius:50%;background:var(--g1);border:1px solid var(--b2);cursor:pointer;font-size:16px;">−</button>
+      <input type="number" class="input" id="bn-a" value="1" min="1" max="20" style="text-align:center;font-size:20px;font-weight:700;flex:1;">
+      <button onclick="let v=parseInt(document.getElementById('bn-a').value)||1;if(v<20)document.getElementById('bn-a').value=v+1;" style="width:32px;height:32px;border-radius:50%;background:var(--g1);border:1px solid var(--b2);cursor:pointer;font-size:16px;">+</button>
+    </div>
+  </div>
+  <div class="fg"><label>เหตุผล</label><input class="input" id="bn-r" placeholder="เช่น ตอบคำถาม, ลืมส่งงาน..."></div>
+  <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:11px;">
+    ${['ตอบคำถาม','ส่งงานก่อนกำหนด','ช่วยเพื่อน','ลืมส่งงาน','ขาดเรียน'].map(r=>`<span onclick="document.getElementById('bn-r').value='${r}'" style="padding:3px 9px;border-radius:20px;font-size:11.5px;background:var(--g1);color:var(--g4);border:1px solid var(--b2);cursor:pointer;">${r}</span>`).join('')}
+  </div>
+  <div class="mfooter">
+    <button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button>
+    <button onclick="sBonus()" class="btn btn-p" style="background:${type==='add'?'var(--warn)':'var(--err)'};">${type==='add'?'⭐ เพิ่ม':'🔻 ลด'}</button>
+  </div>`);
+}
+function sBonus(){
+  const cl=C();const amt=parseInt(document.getElementById('bn-a')?.value)||0;
+  const reason=document.getElementById('bn-r')?.value.trim()||'ไม่ระบุ';
+  if(amt<=0){$t('⚠️ กรุณาระบุจำนวน','var(--warn)');return;}
+  const actual=_bTyp==='add'?amt:-amt;
+  if(!cl.bonus[_bTgt])cl.bonus[_bTgt]=0;if(!cl.bonusLog[_bTgt])cl.bonusLog[_bTgt]=[];
+  cl.bonus[_bTgt]+=actual;
+  cl.bonusLog[_bTgt].push({amount:actual,reason,date:new Date().toLocaleDateString('th-TH',{day:'numeric',month:'short'}),type:_bTyp});
+  const s=cl.students.find(x=>x.id===_bTgt);
+  closeMdl();$t(`${_bTyp==='add'?'⭐ เพิ่ม':'🔻 ลด'} ${amt} — ${s?.name||''}`);rScores(P());
+}
+function oBonusAll(){
+  const cl=C();
+  openMdl(`<div class="mhd">⭐ คะแนนเสริมทุกคน</div>
+  <div style="max-height:380px;overflow-y:auto;">
+    ${cl.students.map(s=>{const b=cl.bonus[s.id]||0;return`<div class="srow">
+      <div class="av">${ini(s.name)}</div><div style="flex:1"><div class="sname">${s.name}</div></div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button onclick="closeMdl();qBonus('${s.id}','cut')" style="padding:4px 9px;background:#fef2f2;color:var(--err);border:1px solid #fca5a5;border-radius:var(--rs);cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;">− ลด</button>
+        <span style="font-size:15px;font-weight:700;min-width:26px;text-align:center;color:${b>0?'#92400e':b<0?'var(--err)':'var(--muted)'};">${b>0?'+'+b:b}</span>
+        <button onclick="closeMdl();qBonus('${s.id}','add')" style="padding:4px 9px;background:#fffbeb;color:#92400e;border:1px solid #fcd34d;border-radius:var(--rs);cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;">+ เพิ่ม</button>
+      </div></div>`;}).join('')}
+  </div>
+  <div class="mfooter"><button onclick="closeMdl()" class="btn btn-s">ปิด</button></div>`);
+}
+
+// ============================================================
+// TEACHER — SUBMISSIONS + LESSONS + GAME MANAGER
+// ============================================================
+function rSubs(p){
+  const cl=C();
+  if(!subV||!cl.assignments.find(a=>a.name===subV))subV=cl.assignments[0]?.name||'';
+  const subs=cl.submissions[subV]||{};
+  const done=cl.students.filter(s=>subs[s.id]?.images?.length>0);
+  const wait=cl.students.filter(s=>!subs[s.id]?.images?.length);
+  const pct=cl.students.length?Math.round((done.length/cl.students.length)*100):0;
+  p.innerHTML=`
+  ${rBar()}
+  <div class="card">
+    <div class="card-hd"><div class="cticon">📬</div>งานที่นักเรียนส่ง</div>
+    <div class="chips">${cl.assignments.map(a=>{const n=Object.values(cl.submissions[a.name]||{}).filter(s=>s?.images?.length>0).length;
+      return`<div class="chip ${subV===a.name?'on':''}" onclick="subV='${a.name}';rSubs(P())">${a.name}${n?' ('+n+')':''}</div>`;
+    }).join('')}</div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <span style="font-size:13px;color:var(--muted);">ส่งแล้ว ${done.length}/${cl.students.length} คน</span>
+      <span style="font-weight:500;color:${pct>=80?'var(--ok)':pct>=50?'var(--warn)':'var(--err)'};">${pct}%</span>
+    </div>
+    <div style="height:8px;background:var(--g1);border-radius:4px;overflow:hidden;margin-bottom:13px;">
+      <div style="height:100%;background:${pct>=80?'var(--g3)':pct>=50?'#EF9F27':'#E24B4A'};border-radius:4px;width:${pct}%;transition:width .4s;"></div>
+    </div>
+    ${done.length?done.map(s=>{const sub=subs[s.id];const urls=sub.images.map(x=>x.d);
+      return`<div style="padding:12px 0;border-bottom:.5px solid var(--b1);">
+        <div class="srow" style="padding:0;border:none;margin-bottom:7px;">
+          <div class="av">${ini(s.name)}</div>
+          <div style="flex:1"><div class="sname">${s.name}</div><div class="smeta">${sub.images.length} รูป · ${sub.at}</div>${sub.msg?`<div style="font-size:12px;color:var(--g4);margin-top:2px;">💬 ${sub.msg}</div>`:''}</div>
+          <span class="badge bp">✓</span>
+        </div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap;">${sub.images.map((img,i)=>`<img class="smini" src="${img.d}" onclick="openLbx(${JSON.stringify(urls)},${i})">`).join('')}</div>
+      </div>`;}).join(''):'<div class="empty">ยังไม่มีนักเรียนส่ง</div>'}
+    ${wait.length?`<div style="margin-top:11px;font-size:12px;color:var(--muted);font-weight:500;margin-bottom:6px;">⏳ รอส่ง (${wait.length} คน)</div>
+    ${wait.map(s=>`<div class="srow"><div class="av" style="opacity:.5;">${ini(s.name)}</div><div style="flex:1"><div class="sname" style="color:var(--muted);">${s.name}</div></div><span class="badge" style="background:var(--bg);color:var(--muted);border:1px solid var(--b2);">รอส่ง</span></div>`).join('')}`:''}
+  </div>`;
+}
+
+function rLessons(p){
+  const cl=C();
+  p.innerHTML=`
+  ${mode==='teacher'?rBar():''}
+  <div class="card" style="padding:12px 14px;margin-bottom:13px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+      <div class="card-hd" style="margin-bottom:0;border:none;padding:0;"><div class="cticon">📚</div>บทเรียน (${cl.lessons.length} บท)</div>
+      ${mode==='teacher'?`<button onclick="oAddLesson()" class="btn btn-p btn-sm">➕ เพิ่มบทเรียน</button>`:''}
+    </div>
+  </div>
+  ${!cl.lessons.length?'<div class="card"><div class="empty">ยังไม่มีบทเรียน<br><span style="font-size:12px;">ครูสามารถเพิ่มบทเรียนได้</span></div></div>':''}
+  ${cl.lessons.map((l,li)=>`
+  <div class="lc" id="lc${l.id}">
+    <div class="lc-hd" onclick="document.getElementById('lc${l.id}').classList.toggle('open')">
+      <div class="lc-num">${li+1}</div>
+      <div style="flex:1">
+        <div style="font-size:13.5px;font-weight:500;">${l.icon||''} ${l.title}</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">${l.hours} ชั่วโมง · ${(l.res||[]).length} สื่อ</div>
+      </div>
+      ${mode==='teacher'?`
+        <button onclick="event.stopPropagation();oEditLesson(${l.id})" class="btn btn-s btn-xs" style="margin-right:5px;">✏️</button>
+        <button onclick="event.stopPropagation();delLesson(${l.id})" class="btn btn-d btn-xs" style="margin-right:8px;">🗑</button>`:''}
+      <div class="lc-arr">▶</div>
+    </div>
+    <div class="lc-bd">
+      <p style="font-size:13px;color:var(--text);line-height:1.75;margin:11px 0;">${l.desc||''}</p>
+      ${l.obj?.length?`<div style="font-size:12px;color:var(--g4);font-weight:500;margin-bottom:7px;">จุดประสงค์</div>
+      <ul style="list-style:none;margin-bottom:12px;">${l.obj.map(o=>`<li style="font-size:12.5px;color:var(--muted);padding:3px 0;display:flex;gap:6px;"><span style="color:var(--g3);">→</span>${o}</li>`).join('')}</ul>`:''}
+      ${l.res?.length?`<div style="font-size:12px;color:var(--g4);font-weight:500;margin-bottom:7px;">สื่อการเรียนรู้</div>
+      ${l.res.map(r=>`<div style="display:flex;align-items:center;gap:9px;padding:8px 11px;border-radius:var(--rs);background:var(--bg);margin-bottom:6px;border:.5px solid var(--b1);">
+        <div class="ri ${r.cls||'ri-pdf'}" style="width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;">${r.icon}</div>
+        <div style="flex:1"><div style="font-size:12.5px;">${r.name}</div><div style="font-size:11px;color:var(--muted);">${r.kind}</div></div>
+        ${r.url?`<a href="${r.url}" target="_blank" rel="noopener" class="btn btn-s btn-xs">เปิด</a>`:''}
+      </div>`).join('')}`:''}
+      ${mode==='teacher'?`<button onclick="oAddRes(${l.id})" class="btn btn-s btn-sm" style="margin-top:8px;">➕ เพิ่มสื่อ</button>`:''}
+    </div>
+  </div>`).join('')}`;
+}
+// lesson CSS classes used
+function oAddLesson(){
+  openMdl(`<div class="mhd">📚 เพิ่มบทเรียนใหม่</div>
+  <div class="g2">
+    <div class="fg"><label>ชื่อบทเรียน</label><input class="input" id="nl-t" placeholder="เช่น บทที่ 3: แรง..."></div>
+    <div class="fg"><label>ไอคอน</label><input class="input" id="nl-i" value="📖" maxlength="4" style="font-size:20px;text-align:center;"></div>
+    <div class="fg"><label>ชั่วโมง</label><input type="number" class="input" id="nl-h" value="4" min="1" max="30"></div>
+  </div>
+  <div class="fg"><label>คำอธิบาย</label><textarea class="input" id="nl-d" placeholder="อธิบายเนื้อหา..."></textarea></div>
+  <div class="fg"><label>จุดประสงค์ (กด Enter แยกข้อ)</label><textarea class="input" id="nl-o" placeholder="เช่น อธิบายกฎนิวตัน&#10;คำนวณแรง"></textarea></div>
+  <div class="mfooter"><button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button><button onclick="sAddLesson()" class="btn btn-p">➕ เพิ่ม</button></div>`);
+}
+function sAddLesson(){
+  const cl=C();const tt=document.getElementById('nl-t')?.value.trim();
+  if(!tt){$t('⚠️ กรุณาใส่ชื่อ','var(--warn)');return;}
+  const raw=document.getElementById('nl-o')?.value.trim()||'';
+  cl.lessons.push({id:Date.now(),title:tt,icon:document.getElementById('nl-i')?.value.trim()||'📖',hours:parseInt(document.getElementById('nl-h')?.value)||4,desc:document.getElementById('nl-d')?.value.trim()||'',obj:raw?raw.split('\n').filter(o=>o.trim()):[],res:[]});
+  closeMdl();$t('✅ เพิ่มบทเรียนแล้ว');rLessons(P());
+}
+function oEditLesson(id){
+  editL=id;const cl=C();const l=cl.lessons.find(x=>x.id===id);if(!l)return;
+  openMdl(`<div class="mhd">✏️ แก้ไขบทเรียน</div>
+  <div class="g2">
+    <div class="fg"><label>ชื่อ</label><input class="input" id="el-t" value="${l.title}"></div>
+    <div class="fg"><label>ไอคอน</label><input class="input" id="el-i" value="${l.icon||'📖'}" maxlength="4" style="font-size:20px;text-align:center;"></div>
+    <div class="fg"><label>ชั่วโมง</label><input type="number" class="input" id="el-h" value="${l.hours}" min="1" max="30"></div>
+  </div>
+  <div class="fg"><label>คำอธิบาย</label><textarea class="input" id="el-d">${l.desc||''}</textarea></div>
+  <div class="fg"><label>จุดประสงค์ (Enter แยกข้อ)</label><textarea class="input" id="el-o">${(l.obj||[]).join('\n')}</textarea></div>
+  <div class="mfooter"><button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button><button onclick="sEditLesson()" class="btn btn-p">💾 บันทึก</button></div>`);
+}
+function sEditLesson(){
+  const cl=C();const l=cl.lessons.find(x=>x.id===editL);if(!l)return;
+  l.title=document.getElementById('el-t')?.value.trim()||l.title;
+  l.icon=document.getElementById('el-i')?.value.trim()||l.icon;
+  l.hours=parseInt(document.getElementById('el-h')?.value)||l.hours;
+  l.desc=document.getElementById('el-d')?.value.trim()||l.desc;
+  const raw=document.getElementById('el-o')?.value.trim()||'';
+  l.obj=raw?raw.split('\n').filter(o=>o.trim()):[];
+  closeMdl();$t('✅ บันทึกแล้ว');rLessons(P());
+}
+function delLesson(id){if(!confirm('ลบบทเรียนนี้?'))return;const cl=C();cl.lessons=cl.lessons.filter(l=>l.id!==id);rLessons(P());}
+function oAddRes(lid){
+  openMdl(`<div class="mhd">➕ เพิ่มสื่อการเรียนรู้</div>
+  <div class="g2">
+    <div class="fg"><label>ชื่อสื่อ</label><input class="input" id="rs-n" placeholder="เช่น ใบงาน บท 1"></div>
+    <div class="fg"><label>ประเภท</label><select class="input" id="rs-t"><option value="PDF">📄 PDF</option><option value="วิดีโอ">▶️ วิดีโอ</option><option value="เว็บไซต์">🔗 เว็บไซต์</option><option value="แบบทดสอบ">📝 แบบทดสอบ</option></select></div>
+  </div>
+  <div class="fg"><label>URL (ถ้ามี)</label><input class="input" id="rs-u" placeholder="https://..."></div>
+  <div class="mfooter"><button onclick="closeMdl()" class="btn btn-s">ยกเลิก</button><button onclick="sAddRes(${lid})" class="btn btn-p">➕ เพิ่ม</button></div>`);
+}
+function sAddRes(lid){
+  const cl=C();const l=cl.lessons.find(x=>x.id===lid);if(!l)return;
+  const n=document.getElementById('rs-n')?.value.trim();if(!n){$t('⚠️ กรุณาใส่ชื่อ','var(--warn)');return;}
+  const tp=document.getElementById('rs-t')?.value||'PDF';
+  const im={PDF:'📄',วิดีโอ:'▶️',เว็บไซต์:'🔗',แบบทดสอบ:'📝'};
+  const cm={PDF:'ri-pdf',วิดีโอ:'ri-vid',เว็บไซต์:'ri-lnk',แบบทดสอบ:'ri-qz'};
+  if(!l.res)l.res=[];
+  l.res.push({icon:im[tp]||'📄',cls:cm[tp]||'ri-pdf',name:n,kind:tp,url:document.getElementById('rs-u')?.value.trim()||''});
+  closeMdl();$t('✅ เพิ่มสื่อแล้ว');rLessons(P());
+}
+
+// GAME MANAGER
+function rGameMgr(p){
+  const cl=C();const custom=Object.values(cl.customGames||{});const all=allG();
+  p.innerHTML=`
+  ${rBar()}
+  <div style="background:linear-gradient(135deg,#1a3a6e,#0d274f);border-radius:var(--r);padding:16px 18px;margin-bottom:13px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div style="font-size:26px;">🎮</div>
+      <div style="flex:1;"><div style="color:#fff;font-size:15px;font-weight:600;font-family:'Prompt',sans-serif;">จัดการเกม</div>
+        <div style="color:rgba(147,197,253,.8);font-size:12px;margin-top:2px;">รวม ${all.length} เกม · ครูสร้าง ${custom.length} เกม</div></div>
+      <button onclick="oAddGame()" style="padding:8px 16px;background:var(--g3);color:#fff;border:none;border-radius:var(--rs);font-size:13px;cursor:pointer;font-family:'Sarabun',sans-serif;font-weight:500;">➕ เพิ่มเกม</button>
+    </div>
+  </div>
+  ${custom.length?`<div class="card"><div class="card-hd"><div class="cticon">✏️</div>เกมที่ครูสร้าง</div>
+    ${custom.map(g=>`<div class="srow"><div style="font-size:20px;">${g.icon||'📝'}</div>
+      <div style="flex:1"><div class="sname">${g.title}</div><div class="smeta">${g.cat} · ${tl(g.type)} · ⭐${g.pts}</div></div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="oEditGame(${g.id})" class="btn btn-s btn-xs">✏️</button>
+        <button onclick="delGame(${g.id})" class="btn btn-d btn-xs">🗑</button>
+      </div></div>`).join('')}
+  </div>`:''}
+  <div class="card"><div class="card-hd"><div class="cticon">📚</div>เกมหลักสูตร ม.2 (${BG.length} เกม)</div>
+    ${BG.map(g=>`<div class="srow"><div style="font-size:18px;">${g.icon}</div>
+      <div style="flex:1"><div class="sname" style="font-size:12.5px;">${g.title}</div><div class="smeta">${g.cat} · ${tl(g.type)} · ⭐${g.pts}</div></div>
+      <span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--g1);color:var(--muted);border:1px solid var(--b2);">ล็อค</span></div>`).join('')}
+  </div>
+  <div class="card"><div class="card-hd"><div class="cticon">📊</div>คะแนนเกมนักเรียน</div>
+    ${cl.students.map(s=>{const pts=cl.gamePoints[s.id]||0;const pct=Math.min(100,pts);return`<div class="srow">
+      <div class="av">${ini(s.name)}</div>
+      <div style="flex:1"><div class="sname">${s.name}</div>
+        <div style="height:5px;background:var(--g1);border-radius:3px;overflow:hidden;margin-top:4px;width:80%;"><div style="height:100%;background:${pts>=100?'gold':'var(--g3)'};width:${pct}%;border-radius:3px;"></div></div>
+      </div>
+      <span style="font-size:13px;font-weight:700;color:${pts>=100?'#92400e':'var(--g4)'};">⭐ ${pts}</span>
+    </div>`;}).join('')}
+  </div>`;
+}
+let gfType2='quiz',egId2=null,edQs2=[];
+function oAddGame(){egId2=null;edQs2=[{q:'',opts:['','','',''],ans:0}];gfType2='quiz';rGF(P(),false);}
+function oEditGame(id){
+  const g=Object.values(C().customGames||{}).find(x=>x.id===id);if(!g)return;
+  egId2=id;gfType2=g.type;
+  if(g.qs)edQs2=g.qs.map(q=>({...q,opts:[...q.opts]}));
+  else if(g.pairs)edQs2=g.pairs.map(p=>({...p}));
+  else edQs2=[];
+  rGF(P(),true,g);
+}
+function delGame(id){if(!confirm('ลบเกมนี้?'))return;const cl=C();delete cl.customGames[id];$t('🗑 ลบแล้ว');rGameMgr(P());}
+function rGF(p,isEdit,g={}){
+  gfType2=g.type||'quiz';
+  p.innerHTML=`
+  <div style="background:linear-gradient(135deg,#1a3a6e,#0d274f);border-radius:var(--r);padding:12px 14px;margin-bottom:13px;display:flex;align-items:center;gap:9px;">
+    <button onclick="rGameMgr(P())" style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;">← กลับ</button>
+    <div style="color:#fff;font-size:14px;font-weight:500;font-family:'Prompt',sans-serif;">${isEdit?'✏️ แก้ไขเกม':'➕ สร้างเกม'}</div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="cticon">📋</div>ข้อมูลทั่วไป</div>
+    <div class="g2">
+      <div class="fg"><label>ชื่อเกม</label><input class="input" id="gf-t" value="${g.title||''}" placeholder="ชื่อเกม"></div>
+      <div class="fg"><label>ไอคอน</label><input class="input" id="gf-i" value="${g.icon||'📝'}" maxlength="4" style="font-size:20px;text-align:center;"></div>
+      <div class="fg"><label>หมวดวิชา</label><input class="input" id="gf-c" value="${g.cat||'หลักสูตร ม.2'}" placeholder="หมวดวิชา"></div>
+      <div class="fg"><label>คะแนนที่ได้</label><input type="number" class="input" id="gf-p" value="${g.pts||10}" min="5" max="100"></div>
+    </div>
+    <div class="fg"><label>ประเภทเกม</label>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;">
+        ${['quiz','truefalse','fillblank','memory'].map(t=>`<button id="gft-${t}" onclick="setGft2('${t}')" style="padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--b2);background:${gfType2===t?'var(--g3)':'var(--sur)'};color:${gfType2===t?'#fff':'var(--muted)'};font-family:'Sarabun',sans-serif;transition:all .15s;">${tl(t)}</button>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="cticon">❓</div>คำถาม
+      <button onclick="addGQ()" class="btn btn-s btn-sm" style="margin-left:auto;">➕ เพิ่มข้อ</button>
+    </div>
+    <div id="gf-qs">${bGQs(gfType2)}</div>
+  </div>
+  <div style="display:flex;gap:9px;justify-content:flex-end;margin-bottom:20px;">
+    <button onclick="rGameMgr(P())" class="btn btn-s">ยกเลิก</button>
+    <button onclick="sGame(${isEdit})" class="btn btn-p">💾 ${isEdit?'บันทึก':'สร้างเกม'}</button>
+  </div>`;
+}
+function setGft2(t){
+  gfType2=t;document.querySelectorAll('[id^=gft-]').forEach(b=>{const bt=b.id.replace('gft-','');b.style.background=bt===t?'var(--g3)':'var(--sur)';b.style.color=bt===t?'#fff':'var(--muted)';});
+  if(t==='quiz'||t==='fillblank')edQs2=[{q:'',opts:['','','',''],ans:0}];
+  else if(t==='truefalse')edQs2=[{q:'',ans:true}];
+  else if(t==='memory')edQs2=[{a:'',b:''}];
+  const el=document.getElementById('gf-qs');if(el)el.innerHTML=bGQs(t);
+}
+function bGQs(type){
+  if(type==='quiz'||type==='fillblank'){return edQs2.map((q,qi)=>`
+    <div style="background:var(--bg);border-radius:var(--rs);border:.5px solid var(--b2);padding:11px;margin-bottom:9px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+        <span style="font-size:12px;color:var(--muted);font-weight:600;">ข้อ ${qi+1}</span>
+        ${edQs2.length>1?`<button onclick="rmGQ(${qi})" style="margin-left:auto;padding:3px 8px;background:#fef2f2;color:var(--err);border:1px solid #fca5a5;border-radius:var(--rs);font-size:11px;cursor:pointer;">ลบ</button>`:''}
+      </div>
+      <input class="input" placeholder="คำถาม..." value="${q.q||''}" oninput="edQs2[${qi}].q=this.value" style="margin-bottom:7px;">
+      ${[0,1,2,3].map(i=>`<div style="display:flex;align-items:center;gap:7px;margin-bottom:5px;">
+        <input type="radio" name="gans${qi}" ${q.ans===i?'checked':''} onchange="edQs2[${qi}].ans=${i}" style="accent-color:var(--g3);">
+        <input class="input" placeholder="ตัวเลือก ${i+1}" value="${(q.opts||[])[i]||''}" oninput="if(!edQs2[${qi}].opts)edQs2[${qi}].opts=['','','',''];edQs2[${qi}].opts[${i}]=this.value" style="flex:1;"></div>`).join('')}
+      <div style="font-size:11px;color:var(--muted);">📌 เลือก ○ หน้าคำตอบที่ถูก</div>
+    </div>`).join('');}
+  if(type==='truefalse'){return edQs2.map((q,qi)=>`
+    <div style="background:var(--bg);border-radius:var(--rs);border:.5px solid var(--b2);padding:11px;margin-bottom:9px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:7px;">
+        <span style="font-size:12px;color:var(--muted);">ข้อ ${qi+1}</span>
+        ${edQs2.length>1?`<button onclick="rmGQ(${qi})" style="margin-left:auto;padding:3px 8px;background:#fef2f2;color:var(--err);border:1px solid #fca5a5;border-radius:var(--rs);font-size:11px;cursor:pointer;">ลบ</button>`:''}
+      </div>
+      <input class="input" placeholder="ข้อความ..." value="${q.q||''}" oninput="edQs2[${qi}].q=this.value" style="margin-bottom:7px;">
+      <div style="display:flex;gap:14px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="radio" name="gtf${qi}" ${q.ans===true?'checked':''} onchange="edQs2[${qi}].ans=true" style="accent-color:var(--g3);"> ✓ ถูก</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="radio" name="gtf${qi}" ${q.ans===false?'checked':''} onchange="edQs2[${qi}].ans=false" style="accent-color:var(--err);"> ✕ ผิด</label>
+      </div>
+    </div>`).join('');}
+  if(type==='memory'){return edQs2.map((q,qi)=>`
+    <div style="display:flex;align-items:center;gap:7px;background:var(--bg);border-radius:var(--rs);border:.5px solid var(--b2);padding:9px;margin-bottom:7px;">
+      <span style="font-size:12px;color:var(--muted);">${qi+1}.</span>
+      <input class="input" placeholder="คำ/อีโมจิ" value="${q.a||''}" oninput="edQs2[${qi}].a=this.value" style="flex:1;">
+      <span style="color:var(--muted);">↔</span>
+      <input class="input" placeholder="ความหมาย" value="${q.b||''}" oninput="edQs2[${qi}].b=this.value" style="flex:1;">
+      ${edQs2.length>1?`<button onclick="rmGQ(${qi})" style="width:24px;height:24px;background:#fef2f2;color:var(--err);border:1px solid #fca5a5;border-radius:50%;cursor:pointer;font-size:12px;">✕</button>`:''}
+    </div>`).join('');}
+  return'';
+}
+function addGQ(){
+  if(gfType2==='quiz'||gfType2==='fillblank')edQs2.push({q:'',opts:['','','',''],ans:0});
+  else if(gfType2==='truefalse')edQs2.push({q:'',ans:true});
+  else if(gfType2==='memory')edQs2.push({a:'',b:''});
+  const el=document.getElementById('gf-qs');if(el)el.innerHTML=bGQs(gfType2);
+}
+function rmGQ(i){edQs2.splice(i,1);const el=document.getElementById('gf-qs');if(el)el.innerHTML=bGQs(gfType2);}
+function sGame(isEdit){
+  const cl=C();const tt=document.getElementById('gf-t')?.value.trim();
+  if(!tt){$t('⚠️ กรุณาใส่ชื่อเกม','var(--warn)');return;}
+  if(!edQs2.length){$t('⚠️ กรุณาเพิ่มคำถาม','var(--warn)');return;}
+  const type=gfType2;const id=egId2||Date.now();
+  const go={id,icon:document.getElementById('gf-i')?.value.trim()||'📝',title:tt,cat:document.getElementById('gf-c')?.value.trim()||'หลักสูตร ม.2',type,pts:parseInt(document.getElementById('gf-p')?.value)||10,color:'#2d3748',
+    ...(type==='quiz'||type==='fillblank'?{qs:edQs2.map(q=>({q:q.q,opts:(q.opts||[]).map(o=>o||'—'),ans:q.ans||0}))}:{}),
+    ...(type==='truefalse'?{qs:edQs2.map(q=>({q:q.q,ans:q.ans}))}:{}),
+    ...(type==='memory'?{pairs:edQs2.map(q=>({a:q.a,b:q.b}))}:{}),
+  };
+  if(!cl.customGames)cl.customGames={};cl.customGames[id]=go;
+  $t(`✅ ${isEdit?'แก้ไข':'สร้าง'} "${tt}" แล้ว`);rGameMgr(P());
+}
+
+// ============================================================
+// STUDENT — ALL PAGES
+// ============================================================
+let ciBuf='';
+function rCheckin(p){
+  const cl=C();const s=cl.students.find(x=>x.id===stdId);
+  const today=new Date().toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});
+  const todayFull=new Date().toLocaleDateString('th-TH',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const scr=cl.selfCheckin[today];const done=scr&&scr[stdId];
+  const tst=(cl.attendance[today]||{})[stdId];
+  const ca=cl.classCode&&Date.now()<cl.classCode.expiry;
+  p.innerHTML=`
+  <div style="background:${done?'linear-gradient(135deg,#0a4a28,#1a6b3a)':'linear-gradient(135deg,var(--g5),#1e4010)'};border-radius:var(--r);padding:18px 20px;margin-bottom:13px;text-align:center;">
+    <div style="font-size:40px;margin-bottom:9px;">${done?'✅':'⏳'}</div>
+    <div style="color:#fff;font-size:16px;font-weight:600;font-family:'Prompt',sans-serif;">${s?.name||''}</div>
+    <div style="color:var(--g2);font-size:12px;margin-top:3px;">${todayFull}</div>
+  </div>
+  ${done?`<div class="card" style="text-align:center;padding:22px 20px;">
+    <div style="font-size:16px;font-weight:600;color:var(--ok);font-family:'Prompt',sans-serif;margin-bottom:7px;">เช็คชื่อสำเร็จแล้ว</div>
+    <div style="display:inline-flex;align-items:center;gap:6px;background:var(--g1);border:1px solid var(--g2);border-radius:20px;padding:5px 14px;font-size:13px;color:var(--g4);">🕐 ${scr[stdId]}</div>
+    ${tst?`<div style="margin-top:11px;font-size:12px;color:var(--muted);">สถานะจากครู: <span class="badge ${tst==='P'?'bp':tst==='A'?'ba':tst==='L'?'bl':'blv'}">${tst==='P'?'มาเรียน':tst==='A'?'ขาด':tst==='L'?'มาสาย':'ลา'}</span></div>`:''}
+  </div>`:`
+  <div class="card" style="padding:20px;">
+    <div style="text-align:center;margin-bottom:14px;font-size:13px;color:var(--muted);">กรอกรหัส 4 หลัก<br>ที่ครูแสดงบนกระดาน</div>
+    ${!ca?'<div class="notice na" style="margin-bottom:12px;">⚠️ ยังไม่มีรหัส — รอครูสร้างรหัสแล้วแสดงบนกระดาน</div>':''}
+    <div style="display:flex;justify-content:center;gap:10px;margin-bottom:14px;">${[0,1,2,3].map(i=>`<div class="codebox" id="cb${i}"></div>`).join('')}</div>
+    <div id="ci-err" style="text-align:center;font-size:13px;color:var(--err);min-height:20px;margin-bottom:9px;"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:9px;" id="ci-np"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">
+      <button onclick="ciClr()" style="padding:12px;background:var(--bg);border:1px solid var(--b2);border-radius:var(--rs);font-size:13px;cursor:pointer;color:var(--err);font-family:'Sarabun',sans-serif;">⌫ ลบ</button>
+      <button onclick="doCI()" style="padding:12px;background:var(--g3);color:#fff;border:none;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;font-family:'Sarabun',sans-serif;box-shadow:0 2px 10px rgba(99,153,34,.3);">✓ เช็คชื่อ</button>
+    </div>
+  </div>`}
+  <div class="card"><div class="card-hd"><div class="cticon">📅</div>ประวัติ</div>
+    ${cl.dates.map(d=>{const v=(cl.attendance[d]||{})[stdId];const si=cl.selfCheckin[d]&&cl.selfCheckin[d][stdId];
+      return`<div class="srow"><div style="flex:1"><div class="sname">${d}</div>${si?`<div class="smeta">✅ ${si}</div>`:''}</div>
+        <span class="badge ${v==='P'?'bp':v==='A'?'ba':v==='L'?'bl':'blv'}">${v==='P'?'มา':v==='A'?'ขาด':v==='L'?'สาย':v==='LV'?'ลา':'—'}</span>
+      </div>`;}).join('')}
+  </div>`;
+  if(!done)bCiNp();
+}
+function bCiNp(){
+  ciBuf='';const g=document.getElementById('ci-np');if(!g)return;g.innerHTML='';
+  [1,2,3,4,5,6,7,8,9,'',0,''].forEach(n=>{
+    const b=document.createElement('button');
+    b.style.cssText='padding:13px 6px;background:var(--sur);border:.5px solid var(--b2);border-radius:var(--rs);font-size:18px;font-weight:600;cursor:pointer;font-family:\'Prompt\',sans-serif;color:var(--text);';
+    if(n===''){b.style.visibility='hidden';}else{b.textContent=String(n);b.onclick=()=>{if(ciBuf.length>=4)return;ciBuf+=String(n);updCB();};}
+    g.appendChild(b);
+  });
+}
+function ciClr(){ciBuf=ciBuf.slice(0,-1);updCB();const e=document.getElementById('ci-err');if(e)e.textContent='';}
+function updCB(){for(let i=0;i<4;i++){const el=document.getElementById('cb'+i);if(!el)return;if(i<ciBuf.length){el.textContent=ciBuf[i];el.style.borderColor='var(--g3)';el.style.color='var(--g4)';}else{el.textContent='';el.style.borderColor='var(--b2)';el.style.color='';}}}
+function doCI(){
+  const cl=C();const err=document.getElementById('ci-err');
+  if(ciBuf.length<4){if(err)err.textContent='กรุณากรอกให้ครบ 4 หลัก';return;}
+  if(!cl.classCode?.expiry){if(err)err.textContent='❌ ยังไม่มีรหัสที่ใช้งาน';return;}
+  if(Date.now()>cl.classCode.expiry){if(err)err.textContent='❌ รหัสหมดอายุแล้ว';cl.classCode=null;return;}
+  if(ciBuf!==cl.classCode.code){if(err)err.textContent='❌ รหัสไม่ถูกต้อง';ciBuf='';updCB();return;}
+  const today=new Date().toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'});
+  const ts=new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  if(!cl.selfCheckin[today])cl.selfCheckin[today]={};
+  cl.selfCheckin[today][stdId]=ts;
+  if(!cl.dates.includes(today)){cl.dates.push(today);cl.attendance[today]={};}
+  if(!cl.attendance[today])cl.attendance[today]={};
+  cl.attendance[today][stdId]='P';
+  ciBuf='';$t('✅ เช็คชื่อแล้ว เวลา '+ts);rCheckin(P());
+}
+
+function rMyScore(p){
+  const cl=C();const s=cl.students.find(x=>x.id===stdId);
+  const sc=cl.scores[stdId]||{};
+  const vals=cl.assignments.map(a=>sc[a.name]).filter(v=>v!=null);
+  const avg=vals.length?(vals.reduce((a,b)=>a+b)/vals.length):null;
+  const bv=cl.bonus[stdId]||0;
+  const blog=(cl.bonusLog[stdId]||[]).slice().reverse();
+  const{g,c}=grade(avg);
+  p.innerHTML=`
+  <div style="background:linear-gradient(135deg,var(--g4),var(--g5));border-radius:var(--r);overflow:hidden;margin-bottom:13px;">
+    <div style="padding:16px 18px;display:flex;align-items:center;gap:13px;">
+      <div style="width:46px;height:46px;border-radius:50%;background:var(--g2);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:var(--g5);border:2px solid var(--g3);">${ini(s?.name||'')}</div>
+      <div><div style="color:#fff;font-size:17px;font-weight:600;font-family:'Prompt',sans-serif;">${s?.name||''}</div><div style="color:var(--g2);font-size:12px;margin-top:2px;">รหัส ${s?.id} · ${cl.name}</div></div>
+    </div>
+    <div class="sg4" style="padding:0 16px 16px;margin-bottom:0;">
+      ${[{n:avg!=null?avg.toFixed(1):'—',l:'คะแนนเฉลี่ย'},{n:g,l:'เกรด',c},{n:vals.length,l:'ส่งงานแล้ว'},{n:bv>0?'+'+bv:bv,l:'คะแนนเสริม',col:bv>0?'gold':bv<0?'#fca5a5':'#fff'}].map(x=>`
+        <div class="sbox" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.1);">
+          <div class="sn ${x.c||''}" style="color:${x.col||'#fff'};font-size:20px;">${x.n}</div>
+          <div class="sl" style="color:var(--g2);">${x.l}</div>
+        </div>`).join('')}
+    </div>
+  </div>
+  <div class="card"><div class="card-hd"><div class="cticon">📝</div>รายละเอียด</div>
+    <table style="width:100%;border-collapse:collapse;">
+      ${cl.assignments.map(a=>{const v=sc[a.name];return`<tr>
+        <td style="font-size:13px;color:var(--muted);padding:7px 0;">${a.name}</td>
+        <td style="font-size:13px;font-weight:500;color:${v==null?'var(--muted)':v>=8?'var(--ok)':v>=6?'var(--warn)':'var(--err)'};">${v==null?'ยังไม่ส่ง':v+'/'+a.max}</td>
+        <td>${v!=null?`<div style="height:5px;border-radius:3px;background:var(--g1);overflow:hidden;width:70px;"><div style="height:100%;background:var(--g3);width:${(v/a.max)*100}%;border-radius:3px;"></div></div>`:''}</td>
+      </tr>`;}).join('')}
+    </table>
+  </div>
+  ${blog.length?`<div class="card"><div class="card-hd"><div class="cticon">⭐</div>ประวัติคะแนนเสริม</div>
+    ${blog.map(l=>`<div class="srow"><div style="font-size:20px;">${l.type==='add'?'⭐':'🔻'}</div>
+      <div style="flex:1"><div class="sname">${l.reason}</div><div class="smeta">${l.date}</div></div>
+      <span style="font-size:14px;font-weight:700;color:${l.amount>0?'#92400e':'var(--err)'};">${l.amount>0?'+'+l.amount:l.amount}</span>
+    </div>`).join('')}
+  </div>`:''}
+  <div class="card"><div class="card-hd"><div class="cticon">📢</div>ประกาศ</div>
+    ${cl.announcements.length?cl.announcements.map(a=>`<div class="notice n${a.type||'g'}">${a.text}</div>`).join(''):
+    '<div class="empty">ยังไม่มีประกาศ</div>'}
+  </div>`;
+}
+
+function rMyWork(p){
+  const cl=C();
+  if(!wvAs||!cl.assignments.find(a=>a.name===wvAs))wvAs=cl.assignments[0]?.name||'';
+  if(upAs!==wvAs){upImgs=[];upAs=wvAs;}
+  const cur=(cl.submissions[wvAs]||{})[stdId];const already=cur?.images?.length>0;
+  p.innerHTML=`
+  <div class="card" style="padding:12px 14px;margin-bottom:13px;">
+    <div class="card-hd" style="margin-bottom:9px;border:none;padding:0;"><div class="cticon">📎</div>เลือกชิ้นงาน</div>
+    <div class="chips">${cl.assignments.map(a=>{const h=(cl.submissions[a.name]||{})[stdId]?.images?.length>0;
+      return`<div class="chip ${wvAs===a.name?'on':''}" onclick="upImgs=[];upAs='${a.name}';wvAs='${a.name}';rMyWork(P())">${a.name}${h?' ✓':''}</div>`;
+    }).join('')}</div>
+  </div>
+  ${already?`<div class="card">
+    <div style="background:#f0f7e6;border:1px solid #c0dd97;border-radius:var(--rs);padding:12px 14px;display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;">
+      <span style="font-size:20px;">✅</span>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--ok);">ส่งงานแล้ว · ${wvAs}</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">${cur.at} · ${cur.images.length} รูป</div>
+        ${cur.msg?`<div style="font-size:12px;color:var(--g4);margin-top:3px;">💬 ${cur.msg}</div>`:''}</div>
+      <button onclick="upImgs=[];delete C().submissions['${wvAs}'][stdId];rMyWork(P())" style="padding:4px 9px;background:#fef2f2;border:1px solid #fca5a5;border-radius:var(--rs);color:var(--err);font-size:12px;cursor:pointer;font-family:'Sarabun',sans-serif;white-space:nowrap;">ส่งใหม่</button>
+    </div>
+    <div class="ig">${cur.images.map((img,i)=>`<div class="ith" onclick="openLbx(${JSON.stringify(cur.images.map(x=>x.d))},${i})" style="cursor:pointer;"><img src="${img.d}"></div>`).join('')}</div>
+  </div>`:`
+  <div class="card">
+    <div class="upz" id="upz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="hDrop(event)">
+      <input type="file" accept="image/*" multiple onchange="hFiles(this)">
+      <div style="font-size:32px;margin-bottom:8px;">🖼</div>
+      <div style="font-size:13px;font-weight:500;color:var(--g4);">แตะหรือลากรูปมาวาง</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px;">JPG PNG HEIC · สูงสุด 10 รูป</div>
+    </div>
+    ${upImgs.length?`<div class="ig">${upImgs.map((img,i)=>`<div class="ith"><img src="${img.d}"><button class="idel" onclick="upImgs.splice(${i},1);rMyWork(P())">✕</button></div>`).join('')}</div>
+    <div style="font-size:12px;color:var(--muted);margin-top:7px;">${upImgs.length}/10 รูป</div>
+    <div class="fg" style="margin-top:12px;"><label>ข้อความถึงครู</label><input class="input" id="up-msg" placeholder="ไม่บังคับ..."></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px;">
+      <button onclick="upImgs=[];rMyWork(P())" class="btn btn-s btn-sm">🗑 ล้าง</button>
+      <button onclick="subWork()" class="btn btn-p">📤 ส่ง ${wvAs}</button>
+    </div>`:''}
+  </div>`}
+  <div class="card"><div class="card-hd"><div class="cticon">📊</div>สถานะงาน</div>
+    ${cl.assignments.map(a=>{const h=(cl.submissions[a.name]||{})[stdId];return`<div class="srow">
+      <div class="av">${a.name.substring(0,2)}</div>
+      <div style="flex:1"><div class="sname">${a.name}</div><div class="smeta">${h?.images?.length?h.images.length+' รูป · '+h.at:'ยังไม่ส่ง'}</div></div>
+      <span class="badge ${h?.images?.length?'bp':''}" style="${!h?.images?.length?'background:var(--bg);color:var(--muted);border:1px solid var(--b2);':''}">${h?.images?.length?'✓ ส่งแล้ว':'รอส่ง'}</span>
+    </div>`;}).join('')}
+  </div>`;
+}
+function hFiles(inp){addF(Array.from(inp.files));}
+function hDrop(e){e.preventDefault();document.getElementById('upz')?.classList.remove('drag');addF(Array.from(e.dataTransfer.files));}
+function addF(files){
+  const imgs=files.filter(f=>f.type.startsWith('image/'));
+  if(!imgs.length){$t('⚠️ เลือกรูปภาพเท่านั้น','var(--warn)');return;}
+  const rm=10-upImgs.length;if(rm<=0){$t('⚠️ ครบ 10 รูปแล้ว','var(--warn)');return;}
+  let ld=0;imgs.slice(0,rm).forEach(f=>{const r=new FileReader();r.onload=e2=>{upImgs.push({d:e2.target.result,n:f.name});ld++;if(ld===Math.min(imgs.length,rm))rMyWork(P());};r.readAsDataURL(f);});
+}
+function subWork(){
+  if(!upImgs.length){$t('⚠️ กรุณาเลือกรูป','var(--warn)');return;}
+  const cl=C();const msg=document.getElementById('up-msg')?.value.trim()||'';
+  const at=new Date().toLocaleString('th-TH',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+  if(!cl.submissions[wvAs])cl.submissions[wvAs]={};
+  cl.submissions[wvAs][stdId]={images:[...upImgs],at,msg};
+  upImgs=[];$t('✅ ส่ง '+wvAs+' สำเร็จ!');rMyWork(P());
+}
+
+function rMyAttend(p){
+  const cl=C();const s=cl.students.find(x=>x.id===stdId);
+  const cnt={P:0,A:0,L:0,LV:0};
+  cl.dates.forEach(d=>{const v=(cl.attendance[d]||{})[s.id];if(v)cnt[v]++;});
+  const pct=cl.dates.length?Math.round((cnt.P/cl.dates.length)*100):0;
+  p.innerHTML=`
+  <div class="sg3"><div class="sbox"><div class="sn" style="color:var(--ok);">${cnt.P}</div><div class="sl">มาเรียน</div></div>
+    <div class="sbox"><div class="sn" style="color:var(--err);">${cnt.A}</div><div class="sl">ขาด</div></div>
+    <div class="sbox"><div class="sn" style="color:var(--g3);">${pct}%</div><div class="sl">สัดส่วน</div></div>
+  </div>
+  <div style="background:var(--sur);border-radius:var(--r);padding:14px;margin-bottom:13px;box-shadow:var(--sh);">
+    <div style="height:10px;background:var(--g1);border-radius:5px;overflow:hidden;">
+      <div style="height:100%;background:${pct>=80?'var(--g3)':pct>=60?'var(--warn)':'var(--err)'};width:${pct}%;border-radius:5px;transition:width .5s;"></div>
+    </div>
+  </div>
+  <div class="card"><div class="card-hd"><div class="cticon">📅</div>ประวัติ</div>
+    ${cl.dates.map(d=>{const v=(cl.attendance[d]||{})[s.id];const si=cl.selfCheckin[d]&&cl.selfCheckin[d][s.id];
+      return`<div class="srow"><div style="flex:1"><div class="sname">${d}</div>${si?`<div class="smeta">เช็คเอง: ${si}</div>`:''}</div>
+        <span class="badge ${v==='P'?'bp':v==='A'?'ba':v==='L'?'bl':'blv'}">${v==='P'?'มา':v==='A'?'ขาด':v==='L'?'สาย':v==='LV'?'ลา':'—'}</span>
+      </div>`;}).join('')}
+  </div>`;
+}
+
+// ============================================================
+// GAME HUB + ENGINE + REWARDS
+// ============================================================
+function rGame(p){
+  const cl=C();const pts=cl.gamePoints[stdId]||0;const pct=Math.min(100,pts);
+  const all=allG();const cats=['ทั้งหมด',...new Set(all.map(g=>g.cat))];
+  const filt=all.filter(g=>gfCat==='ทั้งหมด'||g.cat===gfCat);
+  p.innerHTML=`
+  <div style="background:linear-gradient(135deg,#1a3a6e,#0d274f);border-radius:var(--r);padding:16px 18px;margin-bottom:13px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      <div style="font-size:26px;">🎮</div>
+      <div style="flex:1;"><div style="color:#fff;font-size:15px;font-weight:600;font-family:'Prompt',sans-serif;">มินิเกมวิทยาศาสตร์ ม.2</div>
+        <div style="color:rgba(147,197,253,.8);font-size:12px;margin-top:2px;">${all.length} เกม · ครบ 100 ⭐ แลกรางวัล!</div></div>
+      <div style="background:rgba(255,215,0,.18);border:1px solid rgba(255,215,0,.35);border-radius:20px;padding:5px 12px;color:#fff;font-size:13px;font-weight:700;">⭐ ${pts}</div>
+    </div>
+    <div style="font-size:11.5px;color:rgba(147,197,253,.7);margin-bottom:5px;display:flex;justify-content:space-between;"><span>ความคืบหน้า</span><span style="color:#fff;font-weight:600;">${pts}/100</span></div>
+    <div class="gp-bar"><div class="gp-fill" style="width:${pct}%;background:${pts>=100?'linear-gradient(90deg,gold,#fff)':'linear-gradient(90deg,#93c5fd,#c0dd97)'};"></div></div>
+    ${pts>=100?`<div style="text-align:center;margin-top:10px;"><button onclick="switchTab('rewards')" style="padding:8px 20px;background:gold;color:#1a3a00;border:none;border-radius:20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;">🎁 แลกของรางวัลได้แล้ว!</button></div>`:''}
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:13px;">
+    ${cats.map(cat=>`<button onclick="gfCat='${cat}';rGame(P())" style="padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid var(--b2);background:${gfCat===cat?'var(--g3)':'var(--sur)'};color:${gfCat===cat?'#fff':'var(--muted)'};font-family:'Sarabun',sans-serif;">${cat}</button>`).join('')}
+    <button onclick="switchTab('rewards')" style="padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;border:1px solid #fcd34d;background:#fffbeb;color:#92400e;font-family:'Sarabun',sans-serif;margin-left:auto;">🎁 ร้านรางวัล</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">
+    ${filt.map(g=>`<div onclick="startG(${g.id})" style="background:var(--sur);border:.5px solid var(--b2);border-radius:var(--r);padding:13px 11px;cursor:pointer;transition:all .18s;text-align:center;box-shadow:var(--sh);" onmouseover="this.style.borderColor='${g.color||'var(--g3)'}';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='';this.style.transform=''">
+      <div style="font-size:26px;margin-bottom:6px;">${g.icon}</div>
+      <div style="font-size:12px;font-weight:500;color:var(--text);font-family:'Prompt',sans-serif;margin-bottom:2px;line-height:1.3;">${g.title}</div>
+      <div style="font-size:10px;color:var(--muted);margin-bottom:5px;">${tl(g.type)}</div>
+      <div style="display:inline-flex;gap:3px;padding:2px 8px;border-radius:20px;font-size:11px;background:#fffbeb;color:#92400e;border:1px solid #fcd34d;">⭐ +${g.pts}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// GAME ENGINE
+function startG(id){
+  AG=allG().find(g=>g.id===id);if(!AG)return;
+  GS={type:AG.type,score:0,cur:0,answered:false,done:false,sel:null,placed:{}};
+  if(AG.type==='memory')initMem();
+  if(AG.type==='sortorder')GS.order=[...AG.items.map((_,i)=>i)].sort(()=>Math.random()-.5);
+  rAG(P());
+}
+function rAG(p){if(!AG||!p)return;const t=AG.type;
+  if(t==='quiz')rQE(p);else if(t==='truefalse')rTFE(p);
+  else if(t==='fillblank')rFE(p);else if(t==='memory')rME(p);
+  else if(t==='sortorder')rSE(p);else if(t==='speedquiz')rSpE(p);
+}
+function gHd(r=''){return`<div style="background:${AG.color||'#1a3a6e'};border-radius:var(--r);padding:12px 14px;margin-bottom:13px;display:flex;align-items:center;gap:9px;">
+  <button onclick="backG()" style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:8px;padding:5px 10px;cursor:pointer;font-size:12px;font-family:'Sarabun',sans-serif;">← กลับ</button>
+  <div style="font-size:14px;">${AG.icon}</div>
+  <div style="color:#fff;font-size:13px;font-weight:500;font-family:'Prompt',sans-serif;flex:1;">${AG.title}</div>${r}
+</div>`;}
+function backG(){if(spT)clearInterval(spT);AG=null;GS={};rGame(P());}
+function awardP(n){const cl=C();cl.gamePoints[stdId]=Math.min(999,(cl.gamePoints[stdId]||0)+n);}
+function showR(p,earned,detail=''){
+  awardP(earned);const pts=C().gamePoints[stdId];
+  p.innerHTML=`<div style="background:var(--sur);border-radius:var(--r);padding:26px 20px;text-align:center;box-shadow:var(--sh);">
+    <div style="font-size:50px;margin-bottom:11px;">${earned>=AG.pts?'🏆':earned>0?'👍':'😔'}</div>
+    <div style="font-size:17px;font-weight:600;color:var(--g4);font-family:'Prompt',sans-serif;margin-bottom:4px;">${AG.title}</div>
+    ${detail?`<div style="font-size:13px;color:var(--muted);margin-bottom:9px;">${detail}</div>`:''}
+    <div style="font-size:28px;font-weight:700;color:#92400e;margin-bottom:5px;">+${earned} ⭐</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:15px;">คะแนนรวม: <strong style="color:var(--g4)">${pts}</strong>/100</div>
+    <div style="height:8px;background:var(--g1);border-radius:4px;overflow:hidden;margin-bottom:17px;">
+      <div style="height:100%;background:${pts>=100?'gold':'var(--g3)'};border-radius:4px;width:${Math.min(100,(pts/100)*100)}%;transition:width .5s;"></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+      <button onclick="startG(${AG.id})" class="btn btn-p">🔄 เล่นอีกครั้ง</button>
+      <button onclick="backG()" class="btn btn-s">← เลือกเกมอื่น</button>
+      ${pts>=100?`<button onclick="switchTab('rewards')" style="padding:9px 17px;background:gold;color:#1a3a00;border:none;border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;">🎁 แลกรางวัล!</button>`:''}
+    </div>
+  </div>`;
+}
+// QUIZ
+function rQE(p){
+  const{cur,score,answered}=GS;const qs=AG.qs;
+  if(cur>=qs.length){showR(p,score*2,`ตอบถูก ${score}/${qs.length}`);return;}
+  const q=qs[cur];const pct=Math.round((cur/qs.length)*100);
+  p.innerHTML=gHd(`<span style="color:#fff;font-size:12px;">${cur+1}/${qs.length} · ⭐${score*2}</span>`)+`
+  <div class="card">
+    <div style="height:5px;background:var(--g1);border-radius:3px;overflow:hidden;margin-bottom:12px;"><div style="height:100%;background:var(--g3);border-radius:3px;width:${pct}%;"></div></div>
+    <div style="font-size:14.5px;line-height:1.7;text-align:center;margin-bottom:15px;">${q.q}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="qo">
+      ${q.opts.map((o,i)=>`<button id="qo${i}" onclick="ansQ(${i})" ${answered?'disabled':''} class="qopt">${o}</button>`).join('')}
+    </div>
+  </div>
+  ${answered?`<button onclick="nxQ()" class="btn btn-p" style="width:100%;">${cur+1<qs.length?'ข้อถัดไป →':'ดูผลลัพธ์ 🏆'}</button>`:''  }`;
+}
+function ansQ(i){if(GS.answered)return;GS.answered=true;const q=AG.qs[GS.cur];
+  document.querySelectorAll('[id^=qo]').forEach((b,j)=>{b.disabled=true;if(j===q.ans)b.classList.add('ok');else if(j===i&&i!==q.ans)b.classList.add('ng');});
+  if(i===q.ans)GS.score++;rQE(P());}
+function nxQ(){GS.cur++;GS.answered=false;rQE(P());}
+// T/F
+function rTFE(p){
+  const{cur,score,answered}=GS;const qs=AG.qs;
+  if(cur>=qs.length){showR(p,score,`ตอบถูก ${score}/${qs.length}`);return;}
+  const q=qs[cur];
+  p.innerHTML=gHd(`<span style="color:#fff;font-size:12px;">${cur+1}/${qs.length} · ⭐${score}</span>`)+`
+  <div class="card" style="text-align:center;padding:20px;">
+    <div style="font-size:15px;line-height:1.7;margin-bottom:17px;min-height:60px;display:flex;align-items:center;justify-content:center;">${q.q}</div>
+    <div id="tf-fb" style="min-height:24px;margin-bottom:11px;font-size:13px;font-weight:600;"></div>
+    <div style="display:flex;gap:14px;justify-content:center;">
+      <button onclick="ansTF(true)" ${answered?'disabled':''} style="width:120px;padding:14px;border-radius:var(--r);border:2px solid var(--g3);background:var(--sur);font-size:20px;cursor:pointer;font-family:'Prompt',sans-serif;font-weight:700;color:var(--g4);">✓ ถูก</button>
+      <button onclick="ansTF(false)" ${answered?'disabled':''} style="width:120px;padding:14px;border-radius:var(--r);border:2px solid #fca5a5;background:var(--sur);font-size:20px;cursor:pointer;font-family:'Prompt',sans-serif;font-weight:700;color:var(--err);">✕ ผิด</button>
+    </div>
+  </div>
+  ${answered?`<button onclick="nxTF()" class="btn btn-p" style="width:100%;">${cur+1<qs.length?'ข้อถัดไป →':'ดูผลลัพธ์'}</button>`:''  }`;
+}
+function ansTF(ans){if(GS.answered)return;GS.answered=true;const q=AG.qs[GS.cur];const ok=ans===q.ans;if(ok)GS.score++;
+  const fb=document.getElementById('tf-fb');if(fb)fb.innerHTML=ok?`<span style="color:var(--ok);">✓ ถูกต้อง!</span>`:`<span style="color:var(--err);">✕ คำตอบคือ "${q.ans?'ถูก':'ผิด'}"</span>`;
+  rTFE(P());}
+function nxTF(){GS.cur++;GS.answered=false;rTFE(P());}
+// FILL
+function rFE(p){
+  const{cur,score,answered}=GS;const qs=AG.qs;
+  if(cur>=qs.length){showR(p,score,`ตอบถูก ${score}/${qs.length}`);return;}
+  const q=qs[cur];
+  p.innerHTML=gHd(`<span style="color:#fff;font-size:12px;">${cur+1}/${qs.length} · ⭐${score}</span>`)+`
+  <div class="card">
+    <div style="font-size:15px;line-height:1.8;text-align:center;margin-bottom:16px;">${q.q.replace('___','<span style="display:inline-block;min-width:80px;border-bottom:3px solid var(--g3);color:transparent;vertical-align:middle;">___</span>')}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+      ${(q.opts||[]).map((o,i)=>`<button id="fb${i}" onclick="ansF(${i},'${o.replace(/'/g,"\\'")}','${(q.ans||'').replace(/'/g,"\\'")}' )" ${answered?'disabled':''} class="qopt">${o}</button>`).join('')}
+    </div>
+  </div>
+  ${answered?`<button onclick="nxF()" class="btn btn-p" style="width:100%;">${cur+1<qs.length?'ข้อถัดไป →':'ดูผลลัพธ์'}</button>`:''  }`;
+}
+function ansF(i,val,ans){if(GS.answered)return;GS.answered=true;
+  document.querySelectorAll('[id^=fb]').forEach((b,j)=>{b.disabled=true;if(AG.qs[GS.cur].opts[j]===ans)b.classList.add('ok');else if(j===i&&val!==ans)b.classList.add('ng');});
+  if(val===ans)GS.score++;rFE(P());}
+function nxF(){GS.cur++;GS.answered=false;rFE(P());}
+// MEMORY
+function initMem(){
+  const pairs=AG.pairs;
+  const cards=[...pairs,...pairs].map((p,i)=>({id:i,pid:i%pairs.length,face:i<pairs.length?p.a:p.b,fp:false,mt:false})).sort(()=>Math.random()-.5);
+  GS.cards=cards;GS.first=null;GS.lock=false;GS.moves=0;GS.matched=0;
+}
+function rME(p){
+  const{cards,matched,moves}=GS;const tot=AG.pairs.length;
+  if(matched===tot){showR(p,AG.pts,`จับคู่ครบ ${tot} คู่ · ${moves} ครั้ง`);return;}
+  p.innerHTML=gHd(`<span style="color:#fff;font-size:12px;">${matched}/${tot} คู่</span>`)+`
+  <div class="card"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:7px;">
+    ${cards.map((c,i)=>`<div id="mc${i}" onclick="flipM(${i})" class="mc ${c.mt?'mt':c.fp?'fp':''}">${c.fp||c.mt?c.face:'❓'}</div>`).join('')}
+  </div><div style="text-align:center;margin-top:9px;font-size:12px;color:var(--muted);">พลิก ${moves} ครั้ง</div></div>`;
+}
+function flipM(i){const m=GS;if(m.lock||m.cards[i].fp||m.cards[i].mt)return;
+  m.cards[i].fp=true;if(m.first==null){m.first=i;rME(P());return;}
+  m.moves++;m.lock=true;rME(P());
+  const a=m.cards[m.first],b=m.cards[i];
+  if(a.pid===b.pid){m.cards[m.first].mt=true;m.cards[i].mt=true;m.matched++;m.first=null;m.lock=false;rME(P());}
+  else setTimeout(()=>{m.cards[m.first].fp=false;m.cards[i].fp=false;m.first=null;m.lock=false;rME(P());},800);
+}
+// SORT
+function rSE(p){
+  if(GS.done){showR(p,AG.pts,'เรียงลำดับถูกต้อง!');return;}
+  p.innerHTML=gHd('')+`<div class="card">
+    <div style="font-size:13px;color:var(--muted);text-align:center;margin-bottom:11px;">${AG.prompt}</div>
+    ${GS.order.map((oi,pos)=>`<div style="display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--bg);border:.5px solid var(--b2);border-radius:var(--rs);margin-bottom:7px;">
+      <span style="font-size:12px;color:var(--muted);min-width:20px;">${pos+1}.</span>
+      <span style="flex:1;font-size:13px;">${AG.items[oi]}</span>
+      <button onclick="sM(${pos},-1)" ${pos===0?'disabled':''} style="width:26px;height:26px;border-radius:6px;background:var(--g1);border:1px solid var(--b2);cursor:pointer;font-size:13px;color:var(--g4);">↑</button>
+      <button onclick="sM(${pos},1)" ${pos===GS.order.length-1?'disabled':''} style="width:26px;height:26px;border-radius:6px;background:var(--g1);border:1px solid var(--b2);cursor:pointer;font-size:13px;color:var(--g4);">↓</button>
+    </div>`).join('')}
+    <button onclick="chkSort()" class="btn btn-p" style="width:100%;margin-top:4px;">✓ ตรวจคำตอบ</button>
+  </div>`;
+}
+function sM(pos,dir){const o=GS.order,np=pos+dir;if(np<0||np>=o.length)return;[o[pos],o[np]]=[o[np],o[pos]];rSE(P());}
+function chkSort(){let ok=true;GS.order.forEach((v,i)=>{if(v!==AG.correct[i])ok=false;});if(ok){GS.done=true;rSE(P());}else $t('⚠️ ยังไม่ถูกต้อง','var(--warn)');}
+// SPEED QUIZ
+function rSpE(p){
+  if(GS.done){showR(p,GS.score,`ตอบถูก ${GS.corr||0}/${AG.qs.length}`);return;}
+  const qs=AG.qs;if(GS.cur>=qs.length){GS.done=true;rSpE(p);return;}
+  const q=qs[GS.cur];if(spT)clearInterval(spT);GS.tl=q.time||8;
+  const render=()=>{
+    const tl=GS.tl;const col=tl<=3?'#E24B4A':tl<=5?'#BA7517':'#93c5fd';
+    p.innerHTML=gHd(`<div style="background:rgba(255,255,255,.15);border-radius:20px;padding:4px 11px;color:${col};font-size:13px;font-weight:700;">⏱ ${tl}s</div>`)+`
+    <div class="card">
+      <div style="height:6px;background:var(--g1);border-radius:3px;overflow:hidden;margin-bottom:12px;">
+        <div style="height:100%;background:${col};border-radius:3px;width:${(tl/q.time)*100}%;transition:width .9s linear;"></div>
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--muted);margin-bottom:5px;">${GS.cur+1}/${qs.length}</div>
+      <div style="font-size:15px;text-align:center;line-height:1.65;margin-bottom:14px;">${q.q}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        ${q.opts.map((o,i)=>`<button id="sp${i}" onclick="ansSp(${i})" class="qopt">${o}</button>`).join('')}
+      </div>
+    </div>`;
+  };
+  render();
+  spT=setInterval(()=>{GS.tl--;if(GS.tl<=0){clearInterval(spT);tmSp();}else render();},1000);
+}
+function ansSp(i){if(spT)clearInterval(spT);const q=AG.qs[GS.cur];
+  document.querySelectorAll('[id^=sp]').forEach((b,j)=>{b.disabled=true;if(j===q.ans)b.classList.add('ok');else if(j===i&&i!==q.ans)b.classList.add('ng');});
+  if(i===q.ans){GS.score+=3;GS.corr=(GS.corr||0)+1;}
+  setTimeout(()=>{GS.cur++;rSpE(P());},600);}
+function tmSp(){const q=AG.qs[GS.cur];document.querySelectorAll('[id^=sp]').forEach((b,j)=>{b.disabled=true;if(j===q.ans)b.classList.add('ng');});setTimeout(()=>{GS.cur++;rSpE(P());},700);}
+
+// REWARDS
+function rRewards(p){
+  const cl=C();const pts=cl.gamePoints[stdId]||0;const pct=Math.min(100,pts);
+  const my=cl.redeemedRewards[stdId]||[];
+  p.innerHTML=`
+  <div style="background:linear-gradient(135deg,#7c2d12,#9a3412);border-radius:var(--r);padding:18px;margin-bottom:13px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      <div style="font-size:28px;">🎁</div>
+      <div><div style="color:#fff;font-size:15px;font-weight:600;font-family:'Prompt',sans-serif;">ร้านของรางวัล</div><div style="color:rgba(253,186,116,.8);font-size:12px;">100 ⭐ แลกได้!</div></div>
+      <div style="margin-left:auto;background:rgba(255,215,0,.2);border:1px solid rgba(255,215,0,.35);border-radius:20px;padding:5px 13px;color:#fff;font-size:14px;font-weight:700;">⭐ ${pts}</div>
+    </div>
+    <div style="height:10px;background:rgba(255,255,255,.1);border-radius:5px;overflow:hidden;">
+      <div style="height:100%;background:${pct>=100?'linear-gradient(90deg,gold,#fff)':'linear-gradient(90deg,#fdba74,#fff)'};border-radius:5px;width:${pct}%;transition:width .5s;"></div>
+    </div>
+  </div>
+  ${pts<100?`<div class="notice na">ต้องการอีก <strong>${100-pts}</strong> คะแนน — <button onclick="switchTab('game')" style="background:none;border:none;color:var(--g3);cursor:pointer;font-size:13px;text-decoration:underline;font-family:'Sarabun',sans-serif;">ไปเล่นเกม</button></div>`:''}
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px;">
+    ${REWARDS.map(r=>{const done=my.includes(r.id);const can=pts>=r.cost&&!done;
+      return`<div style="background:${done?'var(--g1)':'var(--sur)'};border:.5px solid ${can?'var(--g3)':done?'var(--g2)':'var(--b2)'};border-radius:var(--r);padding:14px;text-align:center;box-shadow:var(--sh);">
+        <div style="font-size:32px;margin-bottom:7px;">${r.icon}</div>
+        <div style="font-size:13px;font-weight:500;color:var(--g4);font-family:'Prompt',sans-serif;margin-bottom:5px;">${r.name}</div>
+        <div style="display:inline-flex;gap:3px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:600;background:#fffbeb;color:#92400e;border:1px solid #fcd34d;margin-bottom:8px;">${r.cost} ⭐</div><br>
+        ${done?`<button disabled style="width:100%;padding:7px;border-radius:var(--rs);font-size:12.5px;font-family:'Sarabun',sans-serif;border:none;background:#f0f7e6;color:var(--ok);cursor:default;">✓ แลกแล้ว</button>`:
+          can?`<button onclick="redeem('${r.id}')" style="width:100%;padding:7px;border-radius:var(--rs);font-size:12.5px;font-family:'Sarabun',sans-serif;border:none;background:var(--g3);color:#fff;cursor:pointer;">🎁 แลกเลย</button>`:
+          `<button disabled style="width:100%;padding:7px;border-radius:var(--rs);font-size:12.5px;font-family:'Sarabun',sans-serif;border:none;background:var(--bg);color:var(--muted);cursor:not-allowed;">ยังไม่พอ</button>`}
+      </div>`;}).join('')}
+  </div>
+  <button onclick="switchTab('game')" class="btn btn-s" style="width:100%;">← กลับหน้าเกม</button>`;
+}
+function redeem(rid){
+  const cl=C();const r=REWARDS.find(x=>x.id===rid);if(!r)return;
+  if((cl.gamePoints[stdId]||0)<r.cost){$t('⭐ คะแนนไม่พอ','var(--warn)');return;}
+  cl.gamePoints[stdId]-=r.cost;
+  if(!cl.redeemedRewards[stdId])cl.redeemedRewards[stdId]=[];
+  cl.redeemedRewards[stdId].push(rid);
+  if(rid==='r3'){
+    if(!cl.bonus[stdId])cl.bonus[stdId]=0;if(!cl.bonusLog[stdId])cl.bonusLog[stdId]=[];
+    cl.bonus[stdId]+=5;cl.bonusLog[stdId].push({amount:5,reason:'แลกคะแนนเสริม +5 จากร้านรางวัล',date:new Date().toLocaleDateString('th-TH',{day:'numeric',month:'short'}),type:'add'});
+  }
+  $t(`🎁 แลก "${r.name}" สำเร็จ!`);rRewards(P());
+}
+
+// CSS for lesson resource icons
+const lcss=document.createElement('style');
+lcss.textContent='.ri-pdf{background:#fef2f2;}.ri-vid{background:#eff6ff;}.ri-lnk{background:#fffbeb;}.ri-qz{background:#f0f7e6;}';
+document.head.appendChild(lcss);
+
+</script>
+</body>
+</html>
